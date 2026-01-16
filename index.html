@@ -5,6 +5,14 @@
   <title>Mural de Avisos</title>
 
   <style>
+    .aviso strong,
+.reuniao strong,
+.urgente strong {
+  display: block;
+  text-align: center;
+  font-size: 16px;
+}
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -53,12 +61,31 @@
 .urgente strong {
   font-size: 16px;
 }
+.legenda {
+  text-align: center;
+  padding: 8px;
+  background: #f1f5f9;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+    @keyframes piscar {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.urgente {
+  animation: piscar 1.5s infinite;
+}
 
   </style>
 </head>
 <body>
 
 <header>
+  <div class="legenda">
+  📢 Aviso &nbsp;&nbsp; 📅 Reunião &nbsp;&nbsp; ⚠️ Urgente
+</div>
   <h1>IE Sarah Kubitschek</h1>
   <p>Mural de Avisos</p>
 </header>
