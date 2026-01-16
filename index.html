@@ -68,7 +68,30 @@
   font-size: 14px;
   border-bottom: 1px solid #ddd;
 }
-  
+  <div class="filtros">
+  <button onclick="filtrar('todos')">Todos</button>
+  <button onclick="filtrar('aviso')">📢 Avisos</button>
+  <button onclick="filtrar('reuniao')">📅 Reuniões</button>
+  <button onclick="filtrar('urgente')">⚠️ Urgentes</button>
+</div>
+.filtros {
+  text-align: center;
+  padding: 10px;
+}
+
+.filtros button {
+  margin: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+
+.filtros button:hover {
+  background: #cbd5e1;
+}
+
   </style>
 </head>
 <body>
@@ -106,23 +129,56 @@ function iconePorTipo(tipo) {
   }
 }
 
+let todosAvisos = [];
+
 fetch(URL_API)
   .then(res => res.json())
   .then(avisos => {
-    const div = document.getElementById("avisos");
 
-    avisos.forEach(a => {
-      const box = document.createElement("div");
-      box.className = a["Tipo"] || "aviso";
-      box.innerHTML = `
-  <strong>${iconePorTipo(a["Tipo"])} ${a["Título"]}</strong>
-  <p>${a["Mensagem"]}</p>
-  <small>${formatarDataBrasil(a["Data"])}</small>
-`;
+    // 1️⃣ Mostrar só ativos
+    avisos = avisos.filter(a => 
+      !a["Ativo"] || a["Ativo"].toLowerCase() === "sim"
+    );
 
-      div.appendChild(box);
+    // 2️⃣ Urgentes primeiro
+    avisos.sort((a, b) => {
+      if (a["Tipo"] === "urgente") return -1;
+      if (b["Tipo"] === "urgente") return 1;
+      return 0;
     });
+
+    todosAvisos = avisos;
+    renderizarAvisos(avisos);
   });
+
+function renderizarAvisos(lista) {
+  const div = document.getElementById("avisos");
+  div.innerHTML = "";
+
+  lista.forEach(a => {
+    const box = document.createElement("div");
+    box.className = a["Tipo"] || "aviso";
+
+    box.innerHTML = `
+      <strong>${iconePorTipo(a["Tipo"])} ${a["Título"]}</strong>
+      <p>${a["Mensagem"]}</p>
+      <small>📅 ${formatarDataBrasil(a["Data"])}</small>
+    `;
+
+    div.appendChild(box);
+  });
+}
+
+function filtrar(tipo) {
+  if (tipo === "todos") {
+    renderizarAvisos(todosAvisos);
+  } else {
+    renderizarAvisos(
+      todosAvisos.filter(a => a["Tipo"] === tipo)
+    );
+  }
+}
+
 </script>
 
 </body>
