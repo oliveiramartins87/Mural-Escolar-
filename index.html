@@ -63,6 +63,13 @@
 </div>
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
+function formatarDataBrasil(dataISO) {
+  if (!dataISO) return "";
+
+  const data = new Date(dataISO);
+
+  return data.toLocaleDateString("pt-BR");
+}
 
 fetch(URL_API)
   .then(res => res.json())
@@ -75,7 +82,7 @@ fetch(URL_API)
       box.innerHTML = `
   <strong>${a["Título"]}</strong>
   <p>${a["Mensagem"]}</p>
-  <small>${a["Data"]}</small>
+  <small>${formatarDataBrasil(a["Data"])}</small>
 `;
 
       div.appendChild(box);
