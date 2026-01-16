@@ -28,6 +28,27 @@
       margin-bottom: 12px;
       border-radius: 6px;
     }
+    .aviso {
+  background: #ffffff;
+  border-left: 6px solid #2563eb;
+}
+
+.reuniao {
+  background: #ffffff;
+  border-left: 6px solid #16a34a;
+}
+
+.urgente {
+  background: #ffffff;
+  border-left: 6px solid #dc2626;
+}
+
+.aviso, .reuniao, .urgente {
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+}
+
   </style>
 </head>
 <body>
@@ -50,7 +71,7 @@ fetch(URL_API)
 
     avisos.forEach(a => {
       const box = document.createElement("div");
-      box.className = "aviso";
+      box.className = a.Tipo || a.tipo || "aviso";
       box.innerHTML = `
         <strong>${a.titulo}</strong>
         <p>${a.mensagem}</p>
