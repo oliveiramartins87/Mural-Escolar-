@@ -43,6 +43,26 @@
     <p>Este é o novo mural.</p>
   </div>
 </div>
+<script>
+const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
+
+fetch(URL_API)
+  .then(res => res.json())
+  .then(avisos => {
+    const div = document.getElementById("avisos");
+
+    avisos.forEach(a => {
+      const box = document.createElement("div");
+      box.className = "aviso";
+      box.innerHTML = `
+        <strong>${a.titulo}</strong>
+        <p>${a.mensagem}</p>
+        <small>${a.data}</small>
+      `;
+      div.appendChild(box);
+    });
+  });
+</script>
 
 </body>
 </html>
