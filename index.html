@@ -71,12 +71,13 @@ fetch(URL_API)
 
     avisos.forEach(a => {
       const box = document.createElement("div");
-      box.className = a.Tipo || a.tipo || "aviso";
+      box.className = a["Tipo"] || "aviso";
       box.innerHTML = `
-        <strong>${a.titulo}</strong>
-        <p>${a.mensagem}</p>
-        <small>${a.data}</small>
-      `;
+  <strong>${a["Título"]}</strong>
+  <p>${a["Mensagem"]}</p>
+  <small>${a["Data"]}</small>
+`;
+
       div.appendChild(box);
     });
   });
