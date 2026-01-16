@@ -48,6 +48,11 @@
   margin-bottom: 12px;
   border-radius: 6px;
 }
+.aviso strong,
+.reuniao strong,
+.urgente strong {
+  font-size: 16px;
+}
 
   </style>
 </head>
@@ -70,6 +75,18 @@ function formatarDataBrasil(dataISO) {
 
   return data.toLocaleDateString("pt-BR");
 }
+function iconePorTipo(tipo) {
+  if (!tipo) return "📢";
+
+  switch (tipo.toLowerCase()) {
+    case "reuniao":
+      return "📅";
+    case "urgente":
+      return "⚠️";
+    default:
+      return "📢";
+  }
+}
 
 fetch(URL_API)
   .then(res => res.json())
@@ -80,7 +97,7 @@ fetch(URL_API)
       const box = document.createElement("div");
       box.className = a["Tipo"] || "aviso";
       box.innerHTML = `
-  <strong>${a["Título"]}</strong>
+  <strong>${iconePorTipo(a["Tipo"])} ${a["Título"]}</strong>
   <p>${a["Mensagem"]}</p>
   <small>${formatarDataBrasil(a["Data"])}</small>
 `;
