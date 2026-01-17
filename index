@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Portal de Avisos</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.portal {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.box {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 360px;
+  margin-top: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-turma {
+  display: block;
+  margin-top: 8px;
+  padding: 10px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="portal">
+
+  <img src="logo.png" alt="Logo da escola" style="height:80px;">
+  <h1>IE Sarah Kubitschek</h1>
+  <p>Portal de Avisos</p>
+
+  <div class="box">
+    <h3>🔒 Área da Escola</h3>
+    <input type="password" id="senha" placeholder="Digite a senha">
+    <button onclick="entrar()">Entrar no Mural Geral</button>
+  </div>
+
+  <div class="box">
+    <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
+    <a class="btn-turma" href="mural.html?turma=IFLGCH1001">Turma IFLGCH1001</a>
+    <a class="btn-turma" href="mural.html?turma=IFLGCH1002">Turma IFLGCH1002</a>
+  </div>
+
+</div>
+
+<script>
+function entrar() {
+  if (document.getElementById("senha").value === "ESCOLA123") {
+    window.location.href = "mural.html";
+  } else {
+    alert("Senha incorreta");
+  }
+}
+</script>
+
+</body>
+</html>
