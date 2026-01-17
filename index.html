@@ -132,41 +132,74 @@
   
 </div>
 <script>
-const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
+const URL_API = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT";
+
+// pega turma da URL
+const params = new URLSearchParams(window.location.search);
+const turmaSelecionada = params.get("turma");
+
+// guarda avisos carregados
+let avisos = [];
+let filtroTipo = "todos";
 
 fetch(URL_API)
   .then(res => res.json())
   .then(dados => {
-    const div = document.getElementById("avisos");
-    div.innerHTML = "";
+    avisos = dados;
+    renderizar();
+  });
 
-    if (!dados || dados.length === 0) {
-      div.innerHTML = "<p>Nenhum aviso disponível.</p>";
-      return;
+function renderizar() {
+  const div = document.getElementById("avisos");
+  div.innerHTML = "";
+
+  const filtrados = avisos.filter(a => {
+    // filtro por turma
+    if (turmaSelecionada) {
+      if (a["Turma"] !== "GERAL" && a["Turma"] !== turmaSelecionada) {
+        return false;
+      }
     }
 
-    dados.forEach(a => {
-      const box = document.createElement("div");
-      box.className = "aviso aviso-" + a["Tipo"];
+    // filtro por tipo
+    if (filtroTipo !== "todos" && a["Tipo"] !== filtroTipo) {
+      return false;
+    }
 
-      box.innerHTML = `
-        <h3>${a["Título"]}</h3>
-        <p>${a["Mensagem"]}</p>
-        <small>
-          📅 ${new Date(a["Data"]).toLocaleDateString("pt-BR")}
-          • 🏫 ${a["Turma"]}
-        </small>
-      `;
-
-      div.appendChild(box);
-    });
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("avisos").innerHTML =
-      "<p>Erro ao carregar avisos.</p>";
+    return true;
   });
+
+  if (filtrados.length === 0) {
+    div.innerHTML = "<p>Nenhum aviso encontrado.</p>";
+    return;
+  }
+
+  filtrados.forEach(a => {
+    const box = document.createElement("div");
+    box.className = `aviso aviso-${a["Tipo"]}`;
+
+    box.innerHTML = `
+      <h3>${a["Título"]}</h3>
+      <p>${a["Mensagem"]}</p>
+      <small>
+        📅 ${new Date(a["Data"]).toLocaleDateString("pt-BR")}
+        • 🏫 ${a["Turma"]}
+      </small>
+    `;
+
+    div.appendChild(box);
+  });
+}
+
+// BOTÕES DE FILTRO
+document.querySelectorAll("[data-filtro]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    filtroTipo = btn.dataset.filtro;
+    renderizar();
+  });
+});
 </script>
+
 
 
 </body>
