@@ -98,6 +98,37 @@ header {
 
 <body>
 
+<!-- ================= PORTAL ================= -->
+<div id="portal" style="display:none; padding:20px; text-align:center; background:#f5f5f5;">
+
+  <h2>IE Sarah Kubitschek</h2>
+  <p>Portal de Avisos</p>
+
+  <div style="max-width:320px; margin:20px auto; background:white; padding:16px; border-radius:8px;">
+    <h3>🔒 Área da Escola</h3>
+    <input type="password" id="senhaPortal" placeholder="Digite a senha"
+           style="width:100%; padding:8px; margin:8px 0;">
+    <button onclick="entrarMuralGeral()"
+            style="width:100%; padding:10px; background:#1e3a8a; color:white; border:none; border-radius:6px;">
+      Entrar no Mural Geral
+    </button>
+  </div>
+
+  <div style="max-width:400px; margin:20px auto;">
+    <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
+    <p>Clique na turma para acessar o mural:</p>
+
+    <a href="?turma=IFLGCH1001">Turma IFLGCH1001</a><br><br>
+    <a href="?turma=IFLGCH1002">Turma IFLGCH1002</a><br><br>
+    <a href="?turma=1ANOA">1º Ano A</a><br><br>
+    <a href="?turma=2ANOB">2º Ano B</a>
+  </div>
+
+</div>
+
+<!-- ================= MURAL ================= -->
+<div id="conteudoMural" style="display:none;">
+
 <header>
   <div class="turma-ativa"></div>
   <h1>IE Sarah Kubitschek</h1>
@@ -106,21 +137,19 @@ header {
 
 <div class="legenda">
   <div class="orientacoes">
-  <h3>🔔 Receba avisos da escola no seu celular</h3>
-  <p>
-    Ative as notificações para receber avisos importantes como
-    reuniões, comunicados urgentes e mudanças de horário.
-  </p>
-  <p>
-  📱 <strong>iPhone:</strong> toque em <strong>Compartilhar</strong> e depois em
-  <strong>Adicionar à Tela de Início</strong> para receber as notificações.
-</p>
-
-  <p>
-    💻 <strong>Android / Computador:</strong> permita as notificações quando solicitado pelo navegador.
-  </p>
-</div>
-
+    <h3>🔔 Receba avisos da escola no seu celular</h3>
+    <p>
+      Ative as notificações para receber avisos importantes como
+      reuniões, comunicados urgentes e mudanças de horário.
+    </p>
+    <p>
+      📱 <strong>iPhone:</strong> toque em <strong>Compartilhar</strong> e depois em
+      <strong>Adicionar à Tela de Início</strong>.
+    </p>
+    <p>
+      💻 <strong>Android / Computador:</strong> permita as notificações quando solicitado pelo navegador.
+    </p>
+  </div>
   📢 Aviso &nbsp;&nbsp; 📅 Reunião &nbsp;&nbsp; ⚠️ Urgente
 </div>
 
@@ -133,124 +162,30 @@ header {
 
 <div id="avisos"></div>
 
-<script>
-const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
+</div>
 
+<script>
+/* ====== CONTROLE DO PORTAL ====== */
 const params = new URLSearchParams(window.location.search);
-const turmaSelecionada = params.get("turma"); // 👈 SEM valor padrão
+const turmaSelecionada = params.get("turma");
 
-document.querySelector(".turma-ativa").innerText =
-  turmaSelecionada
-    ? `TURMA: ${turmaSelecionada}`
-    : "MURAL GERAL";
-
-let avisos = [];
-let filtroTipo = "todos";
-
-function filtrar(tipo) {
-  filtroTipo = tipo;
-  renderizar();
+if (turmaSelecionada) {
+  document.getElementById("conteudoMural").style.display = "block";
+} else {
+  document.getElementById("portal").style.display = "block";
 }
 
-fetch(URL_API)
-  .then(r => r.json())
-  .then(dados => {
-    avisos = dados;
-    renderizar();
-  });
+function entrarMuralGeral() {
+  const senha = document.getElementById("senhaPortal").value;
 
-function icone(tipo) {
-  if (tipo === "aviso") return "📢";
-  if (tipo === "reuniao") return "📅";
-  if (tipo === "urgente") return "⚠️";
-  return "";
-}
-
-function renderizar() {
-  const div = document.getElementById("avisos");
-  div.innerHTML = "";
-
-  // 🔽 ORDENAR: mais recentes primeiro
-  const ordenados = [...avisos].sort(
-    (a, b) => new Date(b.Data) - new Date(a.Data)
-  );
-
-  const filtrados = ordenados.filter(a => {
-
-    // 📌 FILTRO POR TURMA
-    if (turmaSelecionada) {
-      // mural da turma → GERAL + turma
-      if (a.Turma !== "GERAL" && a.Turma !== turmaSelecionada) {
-        return false;
-      }
-    }
-    // mural geral → NÃO filtra por turma (mostra tudo)
-
-    // 📌 FILTRO POR TIPO
-    if (filtroTipo !== "todos" && a.Tipo !== filtroTipo) {
-      return false;
-    }
-
-    return true;
-  });
-
-  if (filtrados.length === 0) {
-    div.innerHTML = "<p>Nenhum aviso encontrado.</p>";
-    return;
+  if (senha === "ESCOLA123") {
+    document.getElementById("portal").style.display = "none";
+    document.getElementById("conteudoMural").style.display = "block";
+  } else {
+    alert("Senha incorreta");
   }
-
-  filtrados.forEach(a => {
-    const box = document.createElement("div");
-
-    // 🎨 destaque visual para avisos GERAL
-    box.className = `aviso aviso-${a.Tipo} ${a.Turma === "GERAL" ? "aviso-geral" : ""}`;
-
-    box.innerHTML = `
-      <h3>${icone(a.Tipo)} ${a.Título}</h3>
-      <p>${a.Mensagem}</p>
-      <small>📅 ${new Date(a.Data).toLocaleDateString("pt-BR")} • 🏫 ${a.Turma}</small>
-    `;
-
-    div.appendChild(box);
-  });
 }
 </script>
-<script>
-if ("serviceWorker" in navigator && "Notification" in window) {
-  navigator.serviceWorker.register("/sw.js")
-    .then(() => {
-      console.log("Service Worker registrado");
 
-      // pedir permissão
-      if (Notification.permission === "default") {
-        Notification.requestPermission().then(permission => {
-          console.log("Permissão:", permission);
-        });
-      }
-    })
-    .catch(err => console.error("Erro no SW", err));
-}
-</script>
-<!-- Webpushr Notifications -->
-<script>
-(function(w,d,s,id){
-  if(typeof(w.webpushr) !== 'undefined') return;
-  w.webpushr = w.webpushr || function(){
-    (w.webpushr.q = w.webpushr.q || []).push(arguments);
-  };
-  var js = d.createElement(s);
-  js.id = id;
-  js.async = true;
-  js.src = "https://cdn.webpushr.com/app.min.js";
-  d.getElementsByTagName("head")[0].appendChild(js);
-})(window,document,"script","webpushr-jssdk");
-
-webpushr('setup', {
-  key: 'BAOnpsIbAKHFbj13o7dllFMlgJ3zJkBR-9Waf0_Uj9EbgVsTVDJ4lUsBuSB3sx5o6n4sHwcggnjdpcdFFma7tkg'
-});
-</script>
-
-
-</body>
 </html>  
 
