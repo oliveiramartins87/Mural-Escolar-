@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <meta charset="UTF-8">
 <title>Mural de Avisos</title>
 
@@ -93,6 +95,57 @@ header {
   border-color: #d32f2f;
   background: #fff5f5;
 }
+  /* ==========================
+   RESPONSIVO DO MURAL
+   ========================== */
+
+* {
+  box-sizing: border-box;
+}
+
+/* 📱 CELULAR */
+@media (max-width: 600px) {
+  .mural-container {
+    padding: 12px;
+  }
+
+  .aviso {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .aviso h3 {
+    font-size: 16px;
+  }
+
+  .aviso p {
+    font-size: 14px;
+  }
+}
+
+/* 💻 COMPUTADOR */
+@media (min-width: 601px) {
+  .mural-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  .avisos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 COLUNAS */
+    gap: 16px;
+  }
+
+  .aviso h3 {
+    font-size: 18px;
+  }
+
+  .aviso p {
+    font-size: 15px;
+  }
+}
+
 </style>
 </head>
 
