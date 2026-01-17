@@ -175,9 +175,9 @@ const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1
 
 // pega turma da URL
 const params = new URLSearchParams(window.location.search);
-const turmaSelecionada = params.get("turma");
+let turmaSelecionada = params.get("turma") || "GERAL";
 
-// guarda avisos carregados
+// estado global
 let avisos = [];
 let filtroTipo = "todos";
 
