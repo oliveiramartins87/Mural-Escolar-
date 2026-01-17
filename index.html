@@ -2,18 +2,25 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal de Avisos</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  background: #4169E1; /* AZUL ROYAL */
+  background: #4169E1;
   text-align: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .portal {
   min-height: 100vh;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -23,8 +30,8 @@ body {
 .box {
   background: white;
   padding: 16px;
-  border-radius: 10px;
-  width: 90%;
+  border-radius: 12px;
+  width: 100%;
   max-width: 360px;
   margin-top: 16px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -33,23 +40,53 @@ body {
 input {
   width: 100%;
   max-width: 280px;
-  padding: 8px;
-  margin: 8px auto;
+  padding: 10px;
+  margin: 10px auto;
   display: block;
-  box-sizing: border-box;
+  font-size: 16px;
+  min-height: 44px;
 }
 
 button {
   width: 100%;
   max-width: 280px;
-  padding: 10px;
+  padding: 12px;
   background: #1e3a8a;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  margin: 8px auto;
+  margin: 10px auto;
   display: block;
+  font-size: 16px;
+  min-height: 44px;
+}
+
+h1 {
+  color: white;
+  font-size: 22px;
+  margin: 8px 0;
+}
+
+h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+p {
+  color: white;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  img {
+    height: 64px;
+  }
+
+  .box {
+    padding: 14px;
+  }
 }
 </style>
 </head>
@@ -58,9 +95,9 @@ button {
 
 <div class="portal">
 
-  <img src="logo.png" alt="Logo da escola" style="height:80px;">
-  <h1 style="color:white;">IE Sarah Kubitschek</h1>
-  <p style="color:white;">Portal de Avisos</p>
+  <img src="logo.png" alt="Logo da escola">
+  <h1>IE Sarah Kubitschek</h1>
+  <p>Portal de Avisos</p>
 
   <!-- ÁREA DA ESCOLA -->
   <div class="box">
@@ -72,10 +109,8 @@ button {
   <!-- ACESSO DOS RESPONSÁVEIS -->
   <div class="box">
     <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
-
     <input type="text" id="turma" placeholder="Digite a turma (ex: IFLGCH1001)">
     <button onclick="abrirTurma()">Acessar Mural da Turma</button>
-
   </div>
 
 </div>
@@ -107,5 +142,4 @@ function abrirTurma() {
 
 </body>
 </html>
-
 
