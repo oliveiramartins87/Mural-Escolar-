@@ -5,7 +5,21 @@
 <title>Mural de Avisos</title>
 
 <style>
-/* ===== VISUAL ===== */
+  /* Destaque visual para avisos gerais */
+.aviso-geral {
+  background: #eef2ff;
+  border-left-style: dashed;
+}
+
+.aviso-geral::before {
+  content: "📌 AVISO GERAL";
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -24,13 +38,23 @@ header {
   color: #000;
   padding: 6px;
   font-weight: bold;
-  text-align: center;
 }
 
-.legenda, .filtros {
+.legenda {
   text-align: center;
+  padding: 8px;
+  background: #f1f5f9;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+.filtros {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
   padding: 10px;
   background: #f1f5f9;
+  flex-wrap: wrap;
 }
 
 .filtros button {
@@ -39,6 +63,10 @@ header {
   border-radius: 6px;
   cursor: pointer;
   background: #e5e7eb;
+}
+
+.filtros button:hover {
+  background: #cbd5e1;
 }
 
 #avisos {
@@ -53,115 +81,77 @@ header {
   border-left: 6px solid #ccc;
 }
 
-.aviso-aviso { border-color: #1976d2; }
-.aviso-reuniao { border-color: #2e7d32; }
-.aviso-urgente { border-color: #d32f2f; background:#fff5f5; }
-
-.aviso-geral {
-  background: #eef2ff;
-  border-left-style: dashed;
+.aviso-aviso {
+  border-color: #1976d2;
 }
 
-.aviso-geral::before {
-  content: "📌 AVISO GERAL";
-  display: block;
-  font-size: 12px;
-  font-weight: bold;
-  color: #1e3a8a;
-  margin-bottom: 6px;
+.aviso-reuniao {
+  border-color: #2e7d32;
 }
 
-/* ===== PORTAL ===== */
-#portal {
-  padding: 20px;
-  text-align: center;
-}
-
-#portal .box {
-  max-width: 320px;
-  margin: 20px auto;
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
+.aviso-urgente {
+  border-color: #d32f2f;
+  background: #fff5f5;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== PORTAL ===== -->
-<div id="portal" style="display:none">
-  <h2>IE Sarah Kubitschek</h2>
-  <p>Portal de Avisos</p>
-
-  <div class="box">
-    <h3>🔒 Área da Escola</h3>
-    <input type="password" id="senhaPortal" placeholder="Digite a senha"
-           style="width:100%; padding:8px;">
-    <br><br>
-    <button onclick="entrarMuralGeral()"
-            style="width:100%; padding:10px; background:#1e3a8a; color:white; border:none; border-radius:6px;">
-      Entrar no Mural Geral
-    </button>
-  </div>
-
-  <div class="box">
-    <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
-    <a href="?turma=IFLGCH1001">Turma IFLGCH1001</a><br><br>
-    <a href="?turma=IFLGCH1002">Turma IFLGCH1002</a>
-  </div>
-</div>
-
-<!-- ===== MURAL ===== -->
-<div id="mural" style="display:none">
-
 <header>
+  <div class="turma-ativa"></div>
   <h1>IE Sarah Kubitschek</h1>
   <p>Mural de Avisos</p>
 </header>
 
-<div class="turma-ativa"></div>
+<div class="legenda">
+  <div class="orientacoes">
+  <h3>🔔 Receba avisos da escola no seu celular</h3>
+  <p>
+    Ative as notificações para receber avisos importantes como
+    reuniões, comunicados urgentes e mudanças de horário.
+  </p>
+  <p>
+  📱 <strong>iPhone:</strong> toque em <strong>Compartilhar</strong> e depois em
+  <strong>Adicionar à Tela de Início</strong> para receber as notificações.
+</p>
 
-<div class="legenda">📢 Aviso &nbsp; 📅 Reunião &nbsp; ⚠️ Urgente</div>
+  <p>
+    💻 <strong>Android / Computador:</strong> permita as notificações quando solicitado pelo navegador.
+  </p>
+</div>
+
+  📢 Aviso &nbsp;&nbsp; 📅 Reunião &nbsp;&nbsp; ⚠️ Urgente
+</div>
 
 <div class="filtros">
   <button onclick="filtrar('todos')">Todos</button>
-  <button onclick="filtrar('aviso')">Avisos</button>
-  <button onclick="filtrar('reuniao')">Reuniões</button>
-  <button onclick="filtrar('urgente')">Urgentes</button>
+  <button onclick="filtrar('aviso')">📢 Avisos</button>
+  <button onclick="filtrar('reuniao')">📅 Reuniões</button>
+  <button onclick="filtrar('urgente')">⚠️ Urgentes</button>
 </div>
 
 <div id="avisos"></div>
-</div>
 
 <script>
-/* ===== CONFIGURAÇÃO ===== */
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
 
 const params = new URLSearchParams(window.location.search);
-const turmaSelecionada = params.get("turma");
+const turmaSelecionada = params.get("turma"); // 👈 SEM valor padrão
+
+document.querySelector(".turma-ativa").innerText =
+  turmaSelecionada
+    ? `TURMA: ${turmaSelecionada}`
+    : "MURAL GERAL";
 
 let avisos = [];
 let filtroTipo = "todos";
 
-/* ===== CONTROLE PORTAL ===== */
-if (turmaSelecionada) {
-  document.getElementById("mural").style.display = "block";
-} else {
-  document.getElementById("portal").style.display = "block";
+function filtrar(tipo) {
+  filtroTipo = tipo;
+  renderizar();
 }
 
-function entrarMuralGeral() {
-  if (document.getElementById("senhaPortal").value === "ESCOLA123") {
-    document.getElementById("portal").style.display = "none";
-    document.getElementById("mural").style.display = "block";
-    renderizar();
-  } else {
-    alert("Senha incorreta");
-  }
-}
-
-/* ===== DADOS ===== */
 fetch(URL_API)
   .then(r => r.json())
   .then(dados => {
@@ -169,37 +159,98 @@ fetch(URL_API)
     renderizar();
   });
 
-/* ===== FILTROS ===== */
-function filtrar(tipo) {
-  filtroTipo = tipo;
-  renderizar();
+function icone(tipo) {
+  if (tipo === "aviso") return "📢";
+  if (tipo === "reuniao") return "📅";
+  if (tipo === "urgente") return "⚠️";
+  return "";
 }
 
-/* ===== RENDER ===== */
 function renderizar() {
-  if (!document.getElementById("mural").style.display) return;
-
-  document.querySelector(".turma-ativa").innerText =
-    turmaSelecionada ? `TURMA: ${turmaSelecionada}` : "MURAL GERAL";
-
   const div = document.getElementById("avisos");
   div.innerHTML = "";
 
-  avisos
-    .sort((a,b)=>new Date(b.Data)-new Date(a.Data))
-    .filter(a=>{
-      if (turmaSelecionada && a.Turma !== "GERAL" && a.Turma !== turmaSelecionada) return false;
-      if (filtroTipo !== "todos" && a.Tipo !== filtroTipo) return false;
-      return true;
-    })
-    .forEach(a=>{
-      const box = document.createElement("div");
-      box.className = `aviso aviso-${a.Tipo} ${a.Turma==="GERAL"?"aviso-geral":""}`;
-      box.innerHTML = `<h3>${a.Título}</h3><p>${a.Mensagem}</p>`;
-      div.appendChild(box);
-    });
+  // 🔽 ORDENAR: mais recentes primeiro
+  const ordenados = [...avisos].sort(
+    (a, b) => new Date(b.Data) - new Date(a.Data)
+  );
+
+  const filtrados = ordenados.filter(a => {
+
+    // 📌 FILTRO POR TURMA
+    if (turmaSelecionada) {
+      // mural da turma → GERAL + turma
+      if (a.Turma !== "GERAL" && a.Turma !== turmaSelecionada) {
+        return false;
+      }
+    }
+    // mural geral → NÃO filtra por turma (mostra tudo)
+
+    // 📌 FILTRO POR TIPO
+    if (filtroTipo !== "todos" && a.Tipo !== filtroTipo) {
+      return false;
+    }
+
+    return true;
+  });
+
+  if (filtrados.length === 0) {
+    div.innerHTML = "<p>Nenhum aviso encontrado.</p>";
+    return;
+  }
+
+  filtrados.forEach(a => {
+    const box = document.createElement("div");
+
+    // 🎨 destaque visual para avisos GERAL
+    box.className = `aviso aviso-${a.Tipo} ${a.Turma === "GERAL" ? "aviso-geral" : ""}`;
+
+    box.innerHTML = `
+      <h3>${icone(a.Tipo)} ${a.Título}</h3>
+      <p>${a.Mensagem}</p>
+      <small>📅 ${new Date(a.Data).toLocaleDateString("pt-BR")} • 🏫 ${a.Turma}</small>
+    `;
+
+    div.appendChild(box);
+  });
 }
 </script>
+<script>
+if ("serviceWorker" in navigator && "Notification" in window) {
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => {
+      console.log("Service Worker registrado");
+
+      // pedir permissão
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then(permission => {
+          console.log("Permissão:", permission);
+        });
+      }
+    })
+    .catch(err => console.error("Erro no SW", err));
+}
+</script>
+<!-- Webpushr Notifications -->
+<script>
+(function(w,d,s,id){
+  if(typeof(w.webpushr) !== 'undefined') return;
+  w.webpushr = w.webpushr || function(){
+    (w.webpushr.q = w.webpushr.q || []).push(arguments);
+  };
+  var js = d.createElement(s);
+  js.id = id;
+  js.async = true;
+  js.src = "https://cdn.webpushr.com/app.min.js";
+  d.getElementsByTagName("head")[0].appendChild(js);
+})(window,document,"script","webpushr-jssdk");
+
+webpushr('setup', {
+  key: 'BAOnpsIbAKHFbj13o7dllFMlgJ3zJkBR-9Waf0_Uj9EbgVsTVDJ4lUsBuSB3sx5o6n4sHwcggnjdpcdFFma7tkg'
+});
+</script>
+
 
 </body>
-</html>
+</html>  
+
