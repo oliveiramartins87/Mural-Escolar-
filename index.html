@@ -215,6 +215,24 @@ if ("serviceWorker" in navigator && "Notification" in window) {
     .catch(err => console.error("Erro no SW", err));
 }
 </script>
+<!-- Webpushr Notifications -->
+<script>
+(function(w,d,s,id){
+  if(typeof(w.webpushr) !== 'undefined') return;
+  w.webpushr = w.webpushr || function(){
+    (w.webpushr.q = w.webpushr.q || []).push(arguments);
+  };
+  var js = d.createElement(s);
+  js.id = id;
+  js.async = true;
+  js.src = "https://cdn.webpushr.com/app.min.js";
+  d.getElementsByTagName("head")[0].appendChild(js);
+})(window,document,"script","webpushr-jssdk");
+
+webpushr('setup', {
+  key: 'BAOnpsIbAKHFbj13o7dllFMlgJ3zJkBR-9Waf0_Uj9EbgVsTVDJ4lUsBuSB3sx5o6n4sHwcggnjdpcdFFma7tkg'
+});
+</script>
 
 
 </body>
