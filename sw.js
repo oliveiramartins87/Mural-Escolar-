@@ -3,8 +3,8 @@ self.addEventListener("push", function (event) {
 
   self.registration.showNotification(data.title, {
     body: data.body,
-    icon: "/icon.png",
-    badge: "/badge.png",
+    icon: "/icon.png",     // crie depois
+    badge: "/badge.png",   // opcional
     data: {
       url: data.url
     }
