@@ -1,106 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Mural de Avisos</title>
+<meta charset="UTF-8">
+<title>Mural de Avisos</title>
 
-  <style>
-    .aviso {
-  background: #ffffff;
-  border-left: 6px solid #ccc;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 6px;
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f5f5;
 }
 
-/* AVISO */
-.aviso-aviso {
-  border-left-color: #1976d2;
-}
-.aviso-aviso h3::before {
-  content: "📢 ";
-}
-
-/* REUNIÃO */
-.aviso-reuniao {
-  border-left-color: #2e7d32;
-}
-.aviso-reuniao h3::before {
-  content: "📅 ";
-}
-
-/* URGENTE */
-.aviso-urgente {
-  border-left-color: #d32f2f;
-  background: #fff5f5;
-}
-.aviso-urgente h3::before {
-  content: "⚠️ ";
-}
-
-    .turma-ativa {
+header {
+  background: #1e3a8a;
+  color: white;
+  padding: 16px;
   text-align: center;
-  padding: 6px;
+}
+
+.turma-ativa {
   background: #e5e7eb;
+  color: #000;
+  padding: 6px;
   font-weight: bold;
 }
 
-    .aviso strong,
-.reuniao strong,
-.urgente strong {
-  display: block;
-  text-align: center;
-  font-size: 16px;
-}
-
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f5f5f5;
-    }
-
-    header {
-      background: #1e3a8a;
-      color: white;
-      padding: 16px;
-      text-align: center;
-    }
-
-    #avisos {
-      padding: 16px;
-    }
-
-    .aviso {
-      background: white;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-    }
-    .aviso {
-  background: #ffffff;
-  border-left: 6px solid #2563eb;
-}
-
-.reuniao {
-  background: #ffffff;
-  border-left: 6px solid #16a34a;
-}
-
-.urgente {
-  background: #ffffff;
-  border-left: 6px solid #dc2626;
-}
-
-.aviso, .reuniao, .urgente {
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-}
-.aviso strong,
-.reuniao strong,
-.urgente strong {
-  font-size: 16px;
-}
 .legenda {
   text-align: center;
   padding: 8px;
@@ -108,30 +32,20 @@
   font-size: 14px;
   border-bottom: 1px solid #ddd;
 }
-  <div class="filtros">
-  <button onclick="filtrar('todos')">Todos</button>
-  <button onclick="filtrar('aviso')">📢 Avisos</button>
-  <button onclick="filtrar('reuniao')">📅 Reuniões</button>
-  <button onclick="filtrar('urgente')">⚠️ Urgentes</button>
-</div>
-.filtros {
-  text-align: center;
-  padding: 10px;
-}
+
 .filtros {
   display: flex;
   justify-content: center;
   gap: 8px;
   padding: 10px;
-  flex-wrap: wrap;
   background: #f1f5f9;
+  flex-wrap: wrap;
 }
 
 .filtros button {
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
-  font-size: 14px;
   cursor: pointer;
   background: #e5e7eb;
 }
@@ -140,9 +54,33 @@
   background: #cbd5e1;
 }
 
+#avisos {
+  padding: 16px;
+}
 
-  </style>
+.aviso {
+  background: #fff;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border-left: 6px solid #ccc;
+}
+
+.aviso-aviso {
+  border-color: #1976d2;
+}
+
+.aviso-reuniao {
+  border-color: #2e7d32;
+}
+
+.aviso-urgente {
+  border-color: #d32f2f;
+  background: #fff5f5;
+}
+</style>
 </head>
+
 <body>
 
 <header>
@@ -150,6 +88,7 @@
   <h1>IE Sarah Kubitschek</h1>
   <p>Mural de Avisos</p>
 </header>
+
 <div class="legenda">
   📢 Aviso &nbsp;&nbsp; 📅 Reunião &nbsp;&nbsp; ⚠️ Urgente
 </div>
@@ -161,50 +100,48 @@
   <button onclick="filtrar('urgente')">⚠️ Urgentes</button>
 </div>
 
-<div id="avisos">
-  
-</div>
+<div id="avisos"></div>
+
 <script>
-  let filtroTipo = "todos";
+const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
+
+const params = new URLSearchParams(window.location.search);
+let turmaSelecionada = params.get("turma") || "GERAL";
+
+document.querySelector(".turma-ativa").innerText =
+  turmaSelecionada === "GERAL"
+    ? "MURAL GERAL"
+    : `TURMA: ${turmaSelecionada}`;
+
+let avisos = [];
+let filtroTipo = "todos";
+
 function filtrar(tipo) {
   filtroTipo = tipo;
   renderizar();
 }
 
-const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
-
-// pega turma da URL
-const params = new URLSearchParams(window.location.search);
-let turmaSelecionada = params.get("turma") || "GERAL";
-
-// estado global
-let avisos = [];
-let filtroTipo = "todos";
-
 fetch(URL_API)
-  .then(res => res.json())
+  .then(r => r.json())
   .then(dados => {
     avisos = dados;
     renderizar();
   });
+
+function icone(tipo) {
+  if (tipo === "aviso") return "📢";
+  if (tipo === "reuniao") return "📅";
+  if (tipo === "urgente") return "⚠️";
+  return "";
+}
 
 function renderizar() {
   const div = document.getElementById("avisos");
   div.innerHTML = "";
 
   const filtrados = avisos.filter(a => {
-    // filtro por turma
-    if (turmaSelecionada) {
-      if (a["Turma"] !== "GERAL" && a["Turma"] !== turmaSelecionada) {
-        return false;
-      }
-    }
-
-    // filtro por tipo
-    if (filtroTipo !== "todos" && a["Tipo"] !== filtroTipo) {
-      return false;
-    }
-
+    if (a.Turma !== "GERAL" && a.Turma !== turmaSelecionada) return false;
+    if (filtroTipo !== "todos" && a.Tipo !== filtroTipo) return false;
     return true;
   });
 
@@ -215,31 +152,19 @@ function renderizar() {
 
   filtrados.forEach(a => {
     const box = document.createElement("div");
-   box.className = `aviso aviso-${a.Tipo}`;
+    box.className = `aviso aviso-${a.Tipo}`;
 
     box.innerHTML = `
-      <h3>${a["Título"]}</h3>
-      <p>${a["Mensagem"]}</p>
-      <small>
-        📅 ${new Date(a["Data"]).toLocaleDateString("pt-BR")}
-        • 🏫 ${a["Turma"]}
-      </small>
+      <h3>${icone(a.Tipo)} ${a.Título}</h3>
+      <p>${a.Mensagem}</p>
+      <small>📅 ${new Date(a.Data).toLocaleDateString("pt-BR")} • 🏫 ${a.Turma}</small>
     `;
 
     div.appendChild(box);
   });
 }
-
-// BOTÕES DE FILTRO
-document.querySelectorAll("[data-filtro]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    filtroTipo = btn.dataset.filtro;
-    renderizar();
-  });
-});
 </script>
-
-
 
 </body>
 </html>
+
