@@ -30,10 +30,9 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* 🔧 INPUT AJUSTADO */
 input {
   width: 100%;
-  max-width: 280px;      /* DIMINUI O TAMANHO */
+  max-width: 280px;
   padding: 8px;
   margin: 8px auto;
   display: block;
@@ -52,17 +51,6 @@ button {
   margin: 8px auto;
   display: block;
 }
-
-.btn-turma {
-  display: block;
-  margin-top: 8px;
-  padding: 10px;
-  background: #e5e7eb;
-  border-radius: 6px;
-  text-decoration: none;
-  color: black;
-  font-weight: bold;
-}
 </style>
 </head>
 
@@ -74,17 +62,19 @@ button {
   <h1 style="color:white;">IE Sarah Kubitschek</h1>
   <p style="color:white;">Portal de Avisos</p>
 
+  <!-- ÁREA DA ESCOLA -->
   <div class="box">
     <h3>🔒 Área da Escola</h3>
     <input type="password" id="senha" placeholder="Digite a senha">
     <button onclick="entrar()">Entrar no Mural Geral</button>
   </div>
 
+  <!-- ACESSO DOS RESPONSÁVEIS -->
   <div class="box">
     <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
-    <a class="btn-turma" href="mural.html?turma=IFLGCH1001">Turma IFLGCH1001</a>
-    <a class="btn-turma" href="mural.html?turma=IFLGCH1002">Turma IFLGCH1002</a>
-    <a class="btn-turma" href="mural.html?turma=IFLGCH1003">Turma IFLGCH1003</a>
+
+    <input type="text" id="turma" placeholder="Digite a turma (ex: IFLGCH1001)">
+    <button onclick="abrirTurma()">Acessar Mural da Turma</button>
 
   </div>
 
@@ -98,8 +88,24 @@ function entrar() {
     alert("Senha incorreta");
   }
 }
+
+function abrirTurma() {
+  const turma = document
+    .getElementById("turma")
+    .value
+    .trim()
+    .toUpperCase();
+
+  if (turma === "") {
+    alert("Digite a turma.");
+    return;
+  }
+
+  window.location.href = "mural.html?turma=" + turma;
+}
 </script>
 
 </body>
 </html>
+
 
