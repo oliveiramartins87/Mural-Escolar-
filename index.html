@@ -5,6 +5,39 @@
   <title>Mural de Avisos</title>
 
   <style>
+    .aviso {
+  background: #ffffff;
+  border-left: 6px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+
+/* AVISO */
+.aviso-aviso {
+  border-left-color: #1976d2;
+}
+.aviso-aviso h3::before {
+  content: "📢 ";
+}
+
+/* REUNIÃO */
+.aviso-reuniao {
+  border-left-color: #2e7d32;
+}
+.aviso-reuniao h3::before {
+  content: "📅 ";
+}
+
+/* URGENTE */
+.aviso-urgente {
+  border-left-color: #d32f2f;
+  background: #fff5f5;
+}
+.aviso-urgente h3::before {
+  content: "⚠️ ";
+}
+
     .turma-ativa {
   text-align: center;
   padding: 6px;
@@ -132,6 +165,12 @@
   
 </div>
 <script>
+  let filtroTipo = "todos";
+function filtrar(tipo) {
+  filtroTipo = tipo;
+  renderizar();
+}
+
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
 
 // pega turma da URL
@@ -176,7 +215,7 @@ function renderizar() {
 
   filtrados.forEach(a => {
     const box = document.createElement("div");
-    box.className = `aviso aviso-${a["Tipo"]}`;
+   box.className = `aviso aviso-${a.Tipo}`;
 
     box.innerHTML = `
       <h3>${a["Título"]}</h3>
