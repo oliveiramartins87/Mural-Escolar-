@@ -106,12 +106,12 @@ header {
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
 
 const params = new URLSearchParams(window.location.search);
-let turmaSelecionada = params.get("turma") || "GERAL";
+const turmaSelecionada = params.get("turma"); // 👈 SEM valor padrão
 
 document.querySelector(".turma-ativa").innerText =
-  turmaSelecionada === "GERAL"
-    ? "MURAL GERAL"
-    : `TURMA: ${turmaSelecionada}`;
+  turmaSelecionada
+    ? `TURMA: ${turmaSelecionada}`
+    : "MURAL GERAL";
 
 let avisos = [];
 let filtroTipo = "todos";
@@ -139,9 +139,27 @@ function renderizar() {
   const div = document.getElementById("avisos");
   div.innerHTML = "";
 
-  const filtrados = avisos.filter(a => {
-    if (a.Turma !== "GERAL" && a.Turma !== turmaSelecionada) return false;
-    if (filtroTipo !== "todos" && a.Tipo !== filtroTipo) return false;
+  // 🔽 ORDENAR: mais recentes primeiro
+  const ordenados = [...avisos].sort(
+    (a, b) => new Date(b.Data) - new Date(a.Data)
+  );
+
+  const filtrados = ordenados.filter(a => {
+
+    // 📌 FILTRO POR TURMA
+    if (turmaSelecionada) {
+      // mural da turma → GERAL + turma
+      if (a.Turma !== "GERAL" && a.Turma !== turmaSelecionada) {
+        return false;
+      }
+    }
+    // mural geral → NÃO filtra por turma (mostra tudo)
+
+    // 📌 FILTRO POR TIPO
+    if (filtroTipo !== "todos" && a.Tipo !== filtroTipo) {
+      return false;
+    }
+
     return true;
   });
 
@@ -152,7 +170,9 @@ function renderizar() {
 
   filtrados.forEach(a => {
     const box = document.createElement("div");
-    box.className = `aviso aviso-${a.Tipo}`;
+
+    // 🎨 destaque visual para avisos GERAL
+    box.className = `aviso aviso-${a.Tipo} ${a.Turma === "GERAL" ? "aviso-geral" : ""}`;
 
     box.innerHTML = `
       <h3>${icone(a.Tipo)} ${a.Título}</h3>
@@ -164,6 +184,7 @@ function renderizar() {
   });
 }
 </script>
+
 
 </body>
 </html>
