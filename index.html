@@ -132,97 +132,42 @@
   
 </div>
 <script>
-  const divTurma = document.querySelector(".turma-ativa");
-
-if (turmaURL) {
-  divTurma.innerText = `Turma: ${turmaURL}`;
-} else {
-  divTurma.innerText = "Mural Geral";
-}
-
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
-function formatarDataBrasil(dataISO) {
-  if (!dataISO) return "";
-
-  const data = new Date(dataISO);
-
-  return data.toLocaleDateString("pt-BR");
-}
-function iconePorTipo(tipo) {
-  if (!tipo) return "📢";
-
-  switch (tipo.toLowerCase()) {
-    case "reuniao":
-      return "📅";
-    case "urgente":
-      return "⚠️";
-    default:
-      return "📢";
-  }
-}
-
-let todosAvisos = [];
-const params = new URLSearchParams(window.location.search);
-const turmaURL = params.get("turma"); // ex: 7B, 6A, CN1001
-
-let todosAvisos = [];
 
 fetch(URL_API)
   .then(res => res.json())
-  .then(avisos => {
+  .then(dados => {
+    const div = document.getElementById("avisos");
+    div.innerHTML = "";
 
-    // Mostrar apenas avisos ativos
-    avisos = avisos.filter(a =>
-      !a["Ativo"] || a["Ativo"].toLowerCase() === "sim"
-    );
-
-    // Filtrar por turma (se houver)
-    if (turmaURL) {
-      avisos = avisos.filter(a =>
-        a["Turma"] === "GERAL" || a["Turma"] === turmaURL
-      );
+    if (!dados || dados.length === 0) {
+      div.innerHTML = "<p>Nenhum aviso disponível.</p>";
+      return;
     }
 
-    // Urgentes primeiro
-    avisos.sort((a, b) => {
-      if (a["Tipo"] === "urgente") return -1;
-      if (b["Tipo"] === "urgente") return 1;
-      return 0;
+    dados.forEach(a => {
+      const box = document.createElement("div");
+      box.className = "aviso aviso-" + a["Tipo"];
+
+      box.innerHTML = `
+        <h3>${a["Título"]}</h3>
+        <p>${a["Mensagem"]}</p>
+        <small>
+          📅 ${new Date(a["Data"]).toLocaleDateString("pt-BR")}
+          • 🏫 ${a["Turma"]}
+        </small>
+      `;
+
+      div.appendChild(box);
     });
-
-    todosAvisos = avisos;
-    renderizarAvisos(avisos);
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("avisos").innerHTML =
+      "<p>Erro ao carregar avisos.</p>";
   });
-
-function renderizarAvisos(lista) {
-  const div = document.getElementById("avisos");
-  div.innerHTML = "";
-
-  lista.forEach(a => {
-    const box = document.createElement("div");
-    box.className = a["Tipo"] || "aviso";
-
-    box.innerHTML = `
-      <strong>${iconePorTipo(a["Tipo"])} ${a["Título"]}</strong>
-      <p>${a["Mensagem"]}</p>
-      <small>📅 ${formatarDataBrasil(a["Data"])}</small>
-    `;
-
-    div.appendChild(box);
-  });
-}
-
-function filtrar(tipo) {
-  if (tipo === "todos") {
-    renderizarAvisos(todosAvisos);
-  } else {
-    renderizarAvisos(
-      todosAvisos.filter(a => a["Tipo"] === tipo)
-    );
-  }
-}
-
 </script>
+
 
 </body>
 </html>
