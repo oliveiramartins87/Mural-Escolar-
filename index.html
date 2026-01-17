@@ -5,6 +5,13 @@
   <title>Mural de Avisos</title>
 
   <style>
+    .turma-ativa {
+  text-align: center;
+  padding: 6px;
+  background: #e5e7eb;
+  font-weight: bold;
+}
+
     .aviso strong,
 .reuniao strong,
 .urgente strong {
@@ -106,6 +113,7 @@
 <body>
 
 <header>
+  <div class="turma-ativa"></div>
   <h1>IE Sarah Kubitschek</h1>
   <p>Mural de Avisos</p>
 </header>
@@ -124,6 +132,14 @@
   
 </div>
 <script>
+  const divTurma = document.querySelector(".turma-ativa");
+
+if (turmaURL) {
+  divTurma.innerText = `Turma: ${turmaURL}`;
+} else {
+  divTurma.innerText = "Mural Geral";
+}
+
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
 function formatarDataBrasil(dataISO) {
   if (!dataISO) return "";
@@ -146,17 +162,28 @@ function iconePorTipo(tipo) {
 }
 
 let todosAvisos = [];
+const params = new URLSearchParams(window.location.search);
+const turmaURL = params.get("turma"); // ex: 7B, 6A, CN1001
+
+let todosAvisos = [];
 
 fetch(URL_API)
   .then(res => res.json())
   .then(avisos => {
 
-    // 1️⃣ Mostrar só ativos
-    avisos = avisos.filter(a => 
+    // Mostrar apenas avisos ativos
+    avisos = avisos.filter(a =>
       !a["Ativo"] || a["Ativo"].toLowerCase() === "sim"
     );
 
-    // 2️⃣ Urgentes primeiro
+    // Filtrar por turma (se houver)
+    if (turmaURL) {
+      avisos = avisos.filter(a =>
+        a["Turma"] === "GERAL" || a["Turma"] === turmaURL
+      );
+    }
+
+    // Urgentes primeiro
     avisos.sort((a, b) => {
       if (a["Tipo"] === "urgente") return -1;
       if (b["Tipo"] === "urgente") return 1;
