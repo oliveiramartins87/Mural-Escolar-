@@ -87,6 +87,48 @@ p {
     height: 64px;
   }
 }
+  /* ===============================
+   AJUSTE AUTOMÁTICO POR DISPOSITIVO
+   =============================== */
+
+/* 📱 CELULAR (até 600px) */
+@media (max-width: 600px) {
+  .portal {
+    justify-content: center;
+  }
+
+  .box {
+    max-width: 360px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+}
+
+/* 💻 COMPUTADOR / NOTEBOOK */
+@media (min-width: 601px) {
+  .portal {
+    justify-content: center;
+  }
+
+  .box {
+    max-width: 420px;   /* MAIS LARGO NO PC */
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  p {
+    font-size: 15px;
+  }
+
+  input, button {
+    max-width: 320px;   /* mais confortável no mouse */
+  }
+}
+
 </style>
 </head>
 
