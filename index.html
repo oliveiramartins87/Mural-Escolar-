@@ -51,6 +51,16 @@ input {
   font-size: 16px;
   min-height: 44px;
 }
+  select {
+  width: 100%;
+  max-width: 280px;
+  padding: 10px;
+  margin: 10px auto;
+  display: block;
+  font-size: 16px;
+  min-height: 44px;
+}
+
 
 button {
   width: 100%;
@@ -176,11 +186,17 @@ p {
   </div>
 
   <!-- RESPONSÁVEIS -->
-  <div class="box">
-    <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
-    <input type="text" id="turma" placeholder="Digite a turma (ex: IFLGCH1001)">
-    <button onclick="abrirTurma()">Acessar Mural da Turma</button>
-  </div>
+  <!-- RESPONSÁVEIS -->
+<div class="box">
+  <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
+
+  <select id="turmaSelect">
+    <option value="">🔽 Selecione a turma</option>
+  </select>
+
+  <button onclick="abrirTurma()">Acessar Mural da Turma</button>
+</div>
+
 <div class="aviso-notificacoes">
   <p class="titulo">🔔 Receba avisos da escola</p>
 
@@ -201,6 +217,9 @@ p {
 </div>
 
 <script>
+const URL_API = "https://script.google.com/macros/s/AKfycbx5Ai2XBS9IPsGs1OcHjg0Naht16xA0JD936xRQvsZBj1VhbyYX8l2H1mT-5vVrF1Xmxg/exec";
+
+// 🔒 Área da escola (continua igual)
 function entrar() {
   if (document.getElementById("senha").value === "ESCOLA123") {
     window.location.href = "mural.html";
@@ -209,26 +228,39 @@ function entrar() {
   }
 }
 
-function abrirTurma() {
-  const turma = document.getElementById("turma").value.trim().toUpperCase();
+// 🔹 Carregar turmas da planilha
+fetch(URL_API + "?tipo=turmas")
+  .then(r => r.json())
+  .then(turmas => {
+    const select = document.getElementById("turmaSelect");
 
-  if (turma === "") {
-    alert("Digite a turma.");
+    turmas.forEach(turma => {
+      const opt = document.createElement("option");
+      opt.value = turma;
+      opt.textContent = turma;
+      select.appendChild(opt);
+    });
+
+    // última turma usada
+    const ultima = localStorage.getItem("ultimaTurma");
+    if (ultima) select.value = ultima;
+  });
+
+// 🔹 Abrir mural da turma (TRAVADO)
+function abrirTurma() {
+  const turma = document.getElementById("turmaSelect").value;
+
+  if (!turma) {
+    alert("Selecione a turma.");
     return;
   }
 
   localStorage.setItem("ultimaTurma", turma);
-  window.location.href = "mural.html?turma=" + turma;
+  window.location.href =
+    "mural.html?turma=" + encodeURIComponent(turma);
 }
-
-// Preenche última turma usada
-window.onload = () => {
-  const ultima = localStorage.getItem("ultimaTurma");
-  if (ultima) {
-    document.getElementById("turma").value = ultima;
-  }
-};
 </script>
+
 
 </body>
 </html>
