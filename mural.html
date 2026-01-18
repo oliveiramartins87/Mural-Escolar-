@@ -210,6 +210,12 @@ const turmaSelecionadaRaw = params.get("turma");
 const turmaSelecionada = turmaSelecionadaRaw
   ? turmaSelecionadaRaw.trim().toUpperCase()
   : null;
+// 📊 Google Analytics – acesso por turma
+if (typeof gtag === "function") {
+  gtag('event', 'acesso_mural_turma', {
+    turma: turmaSelecionada || 'GERAL'
+  });
+}
 
 
 document.querySelector(".turma-ativa").innerText =
