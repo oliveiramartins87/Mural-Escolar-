@@ -246,10 +246,15 @@ fetch(URL_API + "?tipo=turmas")
   .then(r => r.json())
   .then(turmas => {
 
-    if (turmaSelecionada && !turmas.includes(turmaSelecionada)) {
-      mostrarErroTurma();
-      return;
-    }
+    const turmaURL = turmaSelecionada.trim().toUpperCase();
+
+const turmasNormalizadas = turmas
+  .map(t => t.trim().toUpperCase());
+
+if (turmaSelecionada && !turmasNormalizadas.includes(turmaURL)) {
+  mostrarErroTurma();
+  return;
+}
 
     // ✅ Turma válida (mesmo sem aviso)
     fetch(URL_API)
