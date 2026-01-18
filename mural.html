@@ -209,13 +209,58 @@ function filtrar(tipo) {
   filtroTipo = tipo;
   renderizar();
 }
+function mostrarErroTurma() {
+  document.body.innerHTML = `
+    <div style="
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      font-family:Arial;
+      text-align:center;
+      padding:20px;
+      background:#4169E1;
+      color:white;
+    ">
+      <h2>❌ Turma digitada errada</h2>
+      <p>Volte ao portal e selecione a turma correta.</p>
+      <button onclick="window.location.href='index.html'"
+        style="
+          margin-top:16px;
+          padding:12px 20px;
+          font-size:16px;
+          border:none;
+          border-radius:8px;
+          background:white;
+          color:#4169E1;
+          cursor:pointer;
+        ">
+        Voltar ao Portal
+      </button>
+    </div>
+  `;
+}
 
-fetch(URL_API)
+fetch(URL_API + "?tipo=turmas")
   .then(r => r.json())
-  .then(dados => {
-    avisos = dados;
-    renderizar();
+  .then(turmas => {
+
+    if (turmaSelecionada && !turmas.includes(turmaSelecionada)) {
+      mostrarErroTurma();
+      return;
+    }
+
+    // ✅ Turma válida (mesmo sem aviso)
+    fetch(URL_API)
+      .then(r => r.json())
+      .then(dados => {
+        avisos = dados;
+        renderizar();
+      });
+
   });
+
 
 function icone(tipo) {
   if (tipo === "aviso") return "📢";
