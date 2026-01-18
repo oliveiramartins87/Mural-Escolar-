@@ -162,6 +162,34 @@ header {
   border-left: 6px solid #f59e0b;
   background: #fffbea;
 }
+<style>
+/* ... SEU CSS DO MURAL ... */
+
+/* BOTÃO CURTIR */
+.curtir-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 18px;
+  border: none;
+  cursor: pointer;
+  background: #f1f5f9;
+  color: #1e3a8a;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.curtir-btn:active {
+  transform: scale(0.95);
+}
+
+.curtir-btn.curtido {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+</style>
 
 </style>
 </head>
@@ -207,7 +235,7 @@ header {
 <div id="avisos" style="display:none;"></div>
 
 <script>
-const URL_API = "https://script.google.com/macros/s/AKfycbx5Ai2XBS9IPsGs1OcHjg0Naht16xA0JD936xRQvsZBj1VhbyYX8l2H1mT-5vVrF1Xmxg/exec";
+const URL_API = "https://script.google.com/macros/s/AKfycbyaZuIbyKZoqSCONsA8kJiYU18VerlC0Y6qP-vDrHP9YXiV0EjY9YjT4A_AxzeAO9HtDg/exec";
 
 const params = new URLSearchParams(window.location.search);
 const turmaSelecionadaRaw = params.get("turma");
@@ -411,14 +439,47 @@ function renderizar() {
 `;
 
     box.innerHTML = `
-      <h3>${icone(a.Tipo)} ${a.Título}</h3>
-      <p>${a.Mensagem}</p>
-      <small>📅 ${new Date(a.Data).toLocaleDateString("pt-BR")} • 🏫 ${a.Turma}</small>
-    `;
+  <h3>${icone(a.Tipo)} ${a.Título}</h3>
+  <p>${a.Mensagem}</p>
+  <small>
+    📅 ${new Date(a.Data).toLocaleDateString("pt-BR")}
+    • 🏫 ${a.Turma}
+  </small>
 
+  <!-- 👍 BOTÃO CURTIR -->
+  <button class="curtir-btn"
+          onclick="curtirAviso(${a.__linha}, this)">
+    👍 Curtir
+    <span id="curtidas-${a.__linha}">
+      ${a.Curtidas || 0}
+    </span>
+  </button>
+`;
     div.appendChild(box);
   });
 }
+  <script>
+function curtirAviso(linha, botao) {
+  const chave = "curtido_" + linha;
+
+  // impede curtir duas vezes no mesmo celular
+  if (localStorage.getItem(chave)) return;
+
+  fetch(URL_API + "?tipo=curtir&linha=" + linha)
+    .then(r => r.json())
+    .then(res => {
+      document.getElementById("curtidas-" + linha).innerText = res.curtidas;
+      botao.classList.add("curtido");
+      botao.firstChild.textContent = "💙 Curtido ";
+      localStorage.setItem(chave, true);
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao registrar curtida.");
+    });
+}
+</script>
+
 </script>
 <script>
 if ("serviceWorker" in navigator && "Notification" in window) {
