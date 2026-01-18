@@ -188,8 +188,11 @@ header {
   <button onclick="filtrar('reuniao')">📅 Reuniões</button>
   <button onclick="filtrar('urgente')">⚠️ Urgentes</button>
 </div>
+<div id="loading" style="text-align:center; padding:20px;">
+  ⏳ Carregando avisos...
+</div>
 
-<div id="avisos"></div>
+<div id="avisos" style="display:none;"></div>
 
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbx5Ai2XBS9IPsGs1OcHjg0Naht16xA0JD936xRQvsZBj1VhbyYX8l2H1mT-5vVrF1Xmxg/exec";
@@ -208,6 +211,15 @@ document.querySelector(".turma-ativa").innerText =
 
 let avisos = [];
 let filtroTipo = "todos";
+const cacheKey = "avisos_cache_" + (turmaSelecionada || "GERAL");
+const cache = localStorage.getItem(cacheKey);
+
+if (cache) {
+  avisos = JSON.parse(cache);
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("avisos").style.display = "block";
+  renderizar(); // mostra imediatamente
+}
 
 function filtrar(tipo) {
   filtroTipo = tipo;
@@ -262,12 +274,25 @@ fetch(URL_API + "?tipo=turmas")
     }
 
     // 2️⃣ Turma válida OU mural geral → buscar avisos
-    fetch(URL_API)
-      .then(r => r.json())
-      .then(dados => {
-        avisos = dados;
-        renderizar();
-      });
+   fetch(URL_API)
+  .then(r => r.json())
+  .then(dados => {
+    avisos = dados;
+
+    // 💾 salva no cache
+    localStorage.setItem(cacheKey, JSON.stringify(dados));
+
+    // 👁️ controla loading
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("avisos").style.display = "block";
+
+    renderizar(); // atualiza se houver mudança
+  })
+  .catch(() => {
+    document.getElementById("loading").innerText =
+      "Não foi possível carregar os avisos.";
+  });
+
 
   })
   .catch(err => {
