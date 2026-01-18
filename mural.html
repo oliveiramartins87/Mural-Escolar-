@@ -214,52 +214,8 @@ fetch(URL_API)
   .then(r => r.json())
   .then(dados => {
     avisos = dados;
-
-    // ✅ VALIDAR TURMA DIGITADA
-    if (turmaSelecionada) {
-      const turmasExistentes = [...new Set(
-        avisos.map(a => a.Turma).filter(t => t && t !== "GERAL")
-      )];
-
-      if (!turmasExistentes.includes(turmaSelecionada)) {
-        document.body.innerHTML = `
-          <div style="
-            min-height:100vh;
-            display:flex;
-            flex-direction:column;
-            justify-content:center;
-            align-items:center;
-            font-family:Arial;
-            text-align:center;
-            padding:20px;
-            background:#4169E1;
-            color:white;
-          ">
-            <h2>❌ Turma digitada errada</h2>
-            <p>Verifique se a turma foi selecionada corretamente.</p>
-            <button onclick="window.location.href='index.html'"
-              style="
-                margin-top:16px;
-                padding:12px 20px;
-                font-size:16px;
-                border:none;
-                border-radius:8px;
-                background:white;
-                color:#4169E1;
-                cursor:pointer;
-              ">
-              Voltar ao Portal
-            </button>
-          </div>
-        `;
-        return; // ⛔ PARA AQUI
-      }
-    }
-
-    // ✅ Se passou na validação, renderiza
     renderizar();
   });
-
 
 function icone(tipo) {
   if (tipo === "aviso") return "📢";
