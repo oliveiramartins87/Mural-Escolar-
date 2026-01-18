@@ -346,47 +346,43 @@ function mostrarErroTurma() {
 }
 
 // 1️⃣ Buscar lista oficial de turmas
-fetch(URL_API + "?tipo=turmas")
-  .then(r => r.json())
-  .then(turmas => {
+// 🚀 BUSCA EM PARALELO (turmas + avisos)
+const reqTurmas = fetch(URL_API + "?tipo=turmas").then(r => r.json());
+const reqAvisos = fetch(URL_API).then(r => r.json());
+
+Promise.all([reqTurmas, reqAvisos])
+  .then(([turmas, dados]) => {
 
     const turmasValidas = turmas.map(t =>
       t.trim().toUpperCase()
     );
 
-    // ❌ Turma inválida → BLOQUEIA TUDO
+    // ❌ Turma inválida
     if (turmaSelecionada && !turmasValidas.includes(turmaSelecionada)) {
       mostrarErroTurma();
-      return; // ⛔ PARA AQUI
+      return;
     }
-// 🔄 inicia atualização automática a cada 30 segundos
-setInterval(carregarAvisosAutomatico, 30000);
 
-    // 2️⃣ Turma válida OU mural geral → buscar avisos
-   fetch(URL_API)
-  .then(r => r.json())
-  .then(dados => {
     avisos = dados;
 
-    // 💾 salva no cache
+    // 💾 atualiza cache
     localStorage.setItem(cacheKey, JSON.stringify(dados));
 
-    // 👁️ controla loading
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("avisos").style.display = "block";
+    // 👁️ exibe avisos
+    requestAnimationFrame(() => {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("avisos").style.display = "block";
+      renderizar();
+    });
 
-    renderizar(); // atualiza se houver mudança
+    // 🔄 update automático continua igual
+    setInterval(carregarAvisosAutomatico, 30000);
   })
   .catch(() => {
     document.getElementById("loading").innerText =
       "Não foi possível carregar os avisos.";
   });
 
-
-  })
-  .catch(err => {
-    console.error("Erro ao carregar dados:", err);
-  });
 // 🔄 Busca avisos e atualiza automaticamente se houver mudança
 function carregarAvisosAutomatico() {
   fetch(URL_API)
@@ -394,9 +390,9 @@ function carregarAvisosAutomatico() {
     .then(dados => {
 
       // cria uma assinatura simples do conteúdo
-      const assinatura = JSON.stringify(
-        dados.map(a => `${a.Data}-${a.Título}-${a.Mensagem}`)
-      );
+      const assinatura = dados.length
+  ? dados[0].Data + "-" + dados.length
+  : "";
 
       // se não mudou, não faz nada
       if (assinatura === ultimaAssinaturaAvisos) return;
