@@ -158,6 +158,10 @@ header {
     font-size: 15px;
   }
 }
+.aviso-fixado {
+  border-left: 6px solid #f59e0b;
+  background: #fffbea;
+}
 
 </style>
 </head>
@@ -326,9 +330,18 @@ function renderizar() {
   div.innerHTML = "";
 
   // 🔽 ORDENAR: mais recentes primeiro
-  const ordenados = [...avisos].sort(
-    (a, b) => new Date(b.Data) - new Date(a.Data)
-  );
+  const ordenados = [...avisos].sort((a, b) => {
+  const fixA = (a.Fixado || "").toUpperCase() === "SIM";
+  const fixB = (b.Fixado || "").toUpperCase() === "SIM";
+
+  // Avisos fixados sempre no topo
+  if (fixA && !fixB) return -1;
+  if (!fixA && fixB) return 1;
+
+  // Depois ordena por data
+  return new Date(b.Data) - new Date(a.Data);
+});
+
 
   const filtrados = ordenados.filter(a => {
 
@@ -360,7 +373,12 @@ function renderizar() {
     const box = document.createElement("div");
 
     // 🎨 destaque visual para avisos GERAL
-    box.className = `aviso aviso-${a.Tipo} ${a.Turma === "GERAL" ? "aviso-geral" : ""}`;
+    box.className = `
+  aviso 
+  aviso-${a.Tipo} 
+  ${a.Turma === "GERAL" ? "aviso-geral" : ""}
+  ${(a.Fixado || "").toUpperCase() === "SIM" ? "aviso-fixado" : ""}
+`;
 
     box.innerHTML = `
       <h3>${icone(a.Tipo)} ${a.Título}</h3>
