@@ -5,6 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Portal de Avisos</title>
+  <div class="aviso-push">
+  <strong>🔔 Receba avisos da escola no seu celular</strong>
+  <p>
+    Ative as notificações para receber avisos importantes como
+    <b>reuniões, comunicados urgentes</b> e <b>mudanças de horário</b>.
+  </p>
+
+  <p class="plataforma">
+    📱 <b>iPhone:</b> toque em <b>Compartilhar</b> e depois em
+    <b>Adicionar à Tela de Início</b>.
+  </p>
+
+  <p class="plataforma">
+    💻 <b>Android / Computador:</b> permita as notificações quando
+    solicitado pelo navegador.
+  </p>
+</div>
+
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -127,6 +145,34 @@ p {
   input, button {
     max-width: 320px;   /* mais confortável no mouse */
   }
+}
+.aviso-push {
+  background: #ffffff;
+  border-left: 6px solid #1e3a8a;
+  padding: 14px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  text-align: left;
+}
+
+.aviso-push strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #1e3a8a;
+  font-size: 15px;
+}
+
+.aviso-push p {
+  font-size: 13px;
+  margin: 6px 0;
+  color: #333;
+}
+
+.aviso-push .plataforma {
+  font-size: 12.5px;
 }
 
 </style>
