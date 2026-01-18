@@ -54,12 +54,35 @@ input {
   select {
   width: 100%;
   max-width: 280px;
-  padding: 10px;
-  margin: 10px auto;
+  padding: 14px 44px 14px 14px;
+  margin: 12px auto;
   display: block;
   font-size: 16px;
-  min-height: 44px;
+  min-height: 52px;
+
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #1e3a8a;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231e3a8a'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 22px;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
+
+select:focus {
+  outline: none;
+  border-color: #4169E1;
+  box-shadow: 0 0 0 3px rgba(65,105,225,0.25);
+}
+
 
 
 button {
