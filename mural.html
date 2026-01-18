@@ -195,7 +195,11 @@ header {
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
 
 const params = new URLSearchParams(window.location.search);
-const turmaSelecionada = params.get("turma"); // 👈 SEM valor padrão
+const turmaSelecionadaRaw = params.get("turma");
+const turmaSelecionada = turmaSelecionadaRaw
+  ? turmaSelecionadaRaw.trim().toUpperCase()
+  : null;
+
 
 document.querySelector(".turma-ativa").innerText =
   turmaSelecionada
@@ -242,21 +246,22 @@ function mostrarErroTurma() {
   `;
 }
 
+// 1️⃣ Buscar lista oficial de turmas
 fetch(URL_API + "?tipo=turmas")
   .then(r => r.json())
   .then(turmas => {
 
-    const turmaURL = turmaSelecionada.trim().toUpperCase();
+    const turmasValidas = turmas.map(t =>
+      t.trim().toUpperCase()
+    );
 
-const turmasNormalizadas = turmas
-  .map(t => t.trim().toUpperCase());
+    // ❌ Turma inválida → BLOQUEIA TUDO
+    if (turmaSelecionada && !turmasValidas.includes(turmaSelecionada)) {
+      mostrarErroTurma();
+      return; // ⛔ PARA AQUI
+    }
 
-if (turmaSelecionada && !turmasNormalizadas.includes(turmaURL)) {
-  mostrarErroTurma();
-  return;
-}
-
-    // ✅ Turma válida (mesmo sem aviso)
+    // 2️⃣ Turma válida OU mural geral → buscar avisos
     fetch(URL_API)
       .then(r => r.json())
       .then(dados => {
@@ -264,6 +269,9 @@ if (turmaSelecionada && !turmasNormalizadas.includes(turmaURL)) {
         renderizar();
       });
 
+  })
+  .catch(err => {
+    console.error("Erro ao carregar dados:", err);
   });
 
 
@@ -287,11 +295,13 @@ function renderizar() {
 
     // 📌 FILTRO POR TURMA
     if (turmaSelecionada) {
-      // mural da turma → GERAL + turma
-      if (a.Turma !== "GERAL" && a.Turma !== turmaSelecionada) {
-        return false;
-      }
-    }
+  const turmaAviso = a.Turma ? a.Turma.trim().toUpperCase() : "";
+
+  if (turmaAviso !== "GERAL" && turmaAviso !== turmaSelecionada) {
+    return false;
+  }
+}
+
     // mural geral → NÃO filtra por turma (mostra tudo)
 
     // 📌 FILTRO POR TIPO
