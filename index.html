@@ -124,6 +124,9 @@ input:focus {
 /* ===============================
    BOTÕES
    =============================== */
+/* ===============================
+   BOTÕES COM ANIMAÇÃO MODERNA
+   =============================== */
 button {
   width: 100%;
   padding: 14px;
@@ -132,16 +135,44 @@ button {
   font-weight: 600;
   border-radius: 14px;
   border: none;
-  background: #1e3a8a;
-  color: #fff;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  /* visual moderno */
+  background: linear-gradient(135deg, #1e3a8a, #4169E1);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+
+  /* animação */
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
 }
 
-button:active {
-  transform: scale(0.97);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+/* hover (PC) */
+button:hover {
+  filter: brightness(1.05);
 }
+
+/* clique / toque */
+button:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+/* foco acessível */
+button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(65,105,225,0.35),
+    0 8px 18px rgba(0,0,0,0.25);
+}
+
+/* botão secundário */
+button.secundario {
+  background: linear-gradient(135deg, #4169E1, #60a5fa);
+}
+
 
 /* botão secundário (cadastro) */
 button.secundario {
@@ -190,6 +221,55 @@ button.secundario {
     font-size: 26px;
   }
 }
+    /* ===============================
+   SELECT DE TURMAS (MAIOR E MODERNO)
+   =============================== */
+select {
+  width: 100%;
+  padding: 20px;              /* altura maior */
+  margin: 12px 0;
+  font-size: 17px;            /* texto maior */
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  outline: none;
+  appearance: none;           /* remove estilo padrão */
+}
+
+/* foco ao tocar */
+select:focus {
+  border-color: #4169E1;
+  box-shadow: 0 0 0 2px rgba(65,105,225,0.2);
+}
+
+/* wrapper para setinha moderna */
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: "▾";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: #1e3a8a;
+}
+/* ===============================
+   ANIMAÇÃO PULSE (OPCIONAL)
+   =============================== */
+button.pulse {
+  animation: pulse 1.2s ease-in-out;
+}
+
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
 </style>
 
 </head>
@@ -216,12 +296,17 @@ button.secundario {
   <!-- RESPONSÁVEIS -->
 <div class="box">
   <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
-
-  <select id="turmaSelect">
-    <option value="">🔽 Selecione a turma</option>
+<div class="select-wrapper">
+  <select id="turma">
+    <option value="">Selecione a turma</option>
+    <option value="IFLGCH1001">IFLGCH1001</option>
+    <option value="IFLGCH1002">IFLGCH1002</option>
+    <!-- demais turmas -->
   </select>
-
-  <button onclick="abrirTurma()">Acessar Mural da Turma</button>
+</div>
+<button class="pulse" onclick="abrirTurma()">
+  Acessar Mural da Turma
+</button>
 </div>
 
 <div class="aviso-notificacoes">
