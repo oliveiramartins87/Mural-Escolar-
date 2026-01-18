@@ -190,6 +190,51 @@ header {
 </div>
 
 <div id="avisos"></div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const turma = params.get("turma");
+
+const turmasValidas = [
+  "IFLGCH1001",
+  "IFLGCH1002",
+  "IFLGCH1003"
+  // pode ter 70 ou mais
+];
+
+if (!turma || !turmasValidas.includes(turma)) {
+  document.body.innerHTML = `
+    <div style="
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      font-family:Arial;
+      text-align:center;
+      padding:20px;
+      background:#4169E1;
+      color:white;
+    ">
+      <h2>❌ Turma não encontrada</h2>
+      <p>Verifique se a turma foi digitada corretamente.</p>
+      <button onclick="window.location.href='index.html'"
+        style="
+          margin-top:16px;
+          padding:12px 20px;
+          font-size:16px;
+          border:none;
+          border-radius:8px;
+          background:white;
+          color:#4169E1;
+          cursor:pointer;
+        ">
+        Voltar ao Portal
+      </button>
+    </div>
+  `;
+  throw new Error("Turma inválida");
+}
+</script>
 
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbzWFhC2ELhi7dd3QkEvO4P1QSTy0-7l1lEON3cZv_dL1JV2qVWBe6d2d53-0nHCGOkLtg/exec";
