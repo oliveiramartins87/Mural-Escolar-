@@ -19,46 +19,77 @@
 <meta name="theme-color" content="#4169E1">
 
 <style>
-    body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-               Roboto, Helvetica, Arial, sans-serif;
-}
-
+/* ===============================
+   RESET + BASE
+   =============================== */
 * {
   box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: linear-gradient(135deg, #1e3a8a, #4169E1);
-  text-align: center;
   -webkit-tap-highlight-color: transparent;
 }
 
-.portal {
+body {
+  margin: 0;
   min-height: 100vh;
-  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(135deg, #1e3a8a, #4169E1);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: #fff;
 }
 
-.box {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
+/* ===============================
+   CONTAINER PRINCIPAL
+   =============================== */
+.portal {
   width: 100%;
-  max-width: 380px;
-  margin-top: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  max-width: 420px;
+  padding: 20px;
+  text-align: center;
+}
+
+/* ===============================
+   LOGO
+   =============================== */
+.portal img {
+  height: 160px;
+  margin-bottom: 12px;
+}
+
+/* ===============================
+   TÍTULOS
+   =============================== */
+h1 {
+  font-size: 24px;
+  margin: 4px 0;
+  font-weight: 700;
+}
+
+.portal > p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   CARTÕES (BOX)
+   =============================== */
+.box {
+  background: #fff;
+  color: #111;
+  padding: 20px;
+  border-radius: 18px;
+  margin: 16px auto;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
   animation: fadeUp 0.4s ease;
 }
+
+/* animação suave */
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -66,14 +97,21 @@ body {
   }
 }
 
+.box h3 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #1e3a8a;
+}
+
+/* ===============================
+   INPUTS
+   =============================== */
 input {
   width: 100%;
-  max-width: 300px;
   padding: 14px;
-  margin: 12px auto;
-  display: block;
+  margin: 12px 0;
   font-size: 16px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #d1d5db;
   outline: none;
 }
@@ -83,149 +121,77 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(65,105,225,0.2);
 }
 
-  select {
-  width: 100%;
-  max-width: 280px;
-  padding: 14px 44px 14px 14px;
-  margin: 12px auto;
-  display: block;
-  font-size: 16px;
-  min-height: 52px;
-
-  border-radius: 12px;
-  border: 1px solid #d1d5db;
-  background-color: #ffffff;
-  color: #1e3a8a;
-
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231e3a8a'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 22px;
-
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-select:focus {
-  outline: none;
-  border-color: #4169E1;
-  box-shadow: 0 0 0 3px rgba(65,105,225,0.25);
-}
+/* ===============================
+   BOTÕES
+   =============================== */
 button {
   width: 100%;
-  max-width: 300px;
   padding: 14px;
-  background: #1e3a8a;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  margin: 12px auto;
-  display: block;
+  margin-top: 10px;
   font-size: 16px;
   font-weight: 600;
+  border-radius: 14px;
+  border: none;
+  background: #1e3a8a;
+  color: #fff;
+  cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 button:active {
-  transform: scale(0.98);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transform: scale(0.97);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
 }
 
-h1 {
-  color: white;
-  font-size: 22px;
-  margin: 8px 0;
+/* botão secundário (cadastro) */
+button.secundario {
+  background: #4169E1;
 }
 
-h3 {
-  font-size: 18px;
-}
-
-p {
-  color: white;
-  font-size: 14px;
-}
-
-@media (max-width: 480px) {
-  img {
-    height: 64px;
-  }
-}
-  /* ===============================
-   AJUSTE AUTOMÁTICO POR DISPOSITIVO
+/* ===============================
+   TEXTO DE APOIO
    =============================== */
-
-/* 📱 CELULAR (até 600px) */
-@media (max-width: 600px) {
-  .portal {
-    justify-content: center;
-  }
-
-  .box {
-    max-width: 360px;
-  }
-
-  h1 {
-    font-size: 22px;
-  }
+.texto-apoio {
+  font-size: 13px;
+  color: #374151;
+  margin-top: 8px;
 }
 
-/* 💻 COMPUTADOR / NOTEBOOK */
-@media (min-width: 601px) {
-  .portal {
-    justify-content: center;
-  }
+/* ===============================
+   AVISO DE NOTIFICAÇÕES
+   =============================== */
+.aviso-notificacoes {
+  background: rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 18px;
+  font-size: 13px;
+}
 
-  .box {
-    max-width: 420px;   /* MAIS LARGO NO PC */
+.aviso-notificacoes .titulo {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.aviso-notificacoes p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+/* ===============================
+   RESPONSIVO (TELAS MAIORES)
+   =============================== */
+@media (min-width: 600px) {
+  .portal {
+    max-width: 460px;
   }
 
   h1 {
     font-size: 26px;
   }
-
-  p {
-    font-size: 15px;
-  }
-
-  input, button {
-    max-width: 320px;   /* mais confortável no mouse */
-  }
 }
-.aviso-push {
-  background: #ffffff;
-  border-left: 6px solid #1e3a8a;
-  padding: 14px;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 360px;
-  margin-top: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  text-align: left;
-}
-
-.aviso-push strong {
-  display: block;
-  margin-bottom: 6px;
-  color: #1e3a8a;
-  font-size: 15px;
-}
-
-.aviso-push p {
-  font-size: 13px;
-  margin: 6px 0;
-  color: #333;
-}
-
-.aviso-push .plataforma {
-  font-size: 12.5px;
-}
-
 </style>
+
 </head>
 
 <body>
