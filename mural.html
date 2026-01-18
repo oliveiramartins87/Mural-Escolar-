@@ -229,6 +229,8 @@ document.querySelector(".turma-ativa").innerText =
 
 let avisos = [];
 let filtroTipo = "todos";
+  // 🔄 controle de atualização automática
+let ultimaAssinaturaAvisos = null;
 const cacheKey = "avisos_cache_" + (turmaSelecionada || "GERAL");
 const cache = localStorage.getItem(cacheKey);
 
@@ -290,6 +292,8 @@ fetch(URL_API + "?tipo=turmas")
       mostrarErroTurma();
       return; // ⛔ PARA AQUI
     }
+// 🔄 inicia atualização automática a cada 30 segundos
+setInterval(carregarAvisosAutomatico, 30000);
 
     // 2️⃣ Turma válida OU mural geral → buscar avisos
    fetch(URL_API)
@@ -316,6 +320,32 @@ fetch(URL_API + "?tipo=turmas")
   .catch(err => {
     console.error("Erro ao carregar dados:", err);
   });
+// 🔄 Busca avisos e atualiza automaticamente se houver mudança
+function carregarAvisosAutomatico() {
+  fetch(URL_API)
+    .then(r => r.json())
+    .then(dados => {
+
+      // cria uma assinatura simples do conteúdo
+      const assinatura = JSON.stringify(
+        dados.map(a => `${a.Data}-${a.Título}-${a.Mensagem}`)
+      );
+
+      // se não mudou, não faz nada
+      if (assinatura === ultimaAssinaturaAvisos) return;
+
+      // se mudou, atualiza tudo
+      ultimaAssinaturaAvisos = assinatura;
+      avisos = dados;
+
+      // atualiza cache
+      localStorage.setItem(cacheKey, JSON.stringify(dados));
+
+      // renderiza sem reload
+      renderizar();
+    })
+    .catch(err => console.error("Erro na atualização automática:", err));
+}
 
 
 function icone(tipo) {
