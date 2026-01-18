@@ -184,6 +184,11 @@ header {
   background: #dbeafe;
   color: #1d4ed8;
 }
+  .curtir-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
 </style>
 </head>
 
@@ -439,13 +444,25 @@ function renderizar() {
   </small>
 
   <!-- 👍 BOTÃO CURTIR -->
-  <button class="curtir-btn"
-          onclick="curtirAviso(${a.__linha}, this)">
-    👍 Curtir
-    <span id="curtidas-${a.__linha}">
-      ${a.Curtidas || 0}
-    </span>
-  </button>
+  ${localStorage.getItem("curtido_" + a.__linha)
+  ? `
+<button class="curtir-btn curtido" disabled>
+  💙 Curtido
+  <span id="curtidas-${a.__linha}">
+    ${a.Curtidas || 0}
+  </span>
+</button>
+`
+  : `
+<button class="curtir-btn"
+        onclick="curtirAviso(${a.__linha}, this)">
+  👍 Curtir
+  <span id="curtidas-${a.__linha}">
+    ${a.Curtidas || 0}
+  </span>
+</button>
+`}
+
 `;
     div.appendChild(box);
   });
