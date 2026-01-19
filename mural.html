@@ -299,13 +299,20 @@ let filtroTipo = "todos";
   // 🔄 controle de atualização automática
 let ultimaAssinaturaAvisos = null;
 const cacheKey = "avisos_cache_" + (turmaSelecionada || "GERAL");
-const cache = localStorage.getItem(cacheKey);
+const cacheTimeKey = cacheKey + "_time";
+const CACHE_VALIDADE = 30000; // ⏱️ 30 segundos
 
-if (cache) {
+const cache = localStorage.getItem(cacheKey);
+const cacheTime = localStorage.getItem(cacheTimeKey);
+const agora = Date.now();
+
+if (cache && cacheTime && (agora - Number(cacheTime) < CACHE_VALIDADE)) {
   avisos = JSON.parse(cache);
+
   document.getElementById("loading").style.display = "none";
   document.getElementById("avisos").style.display = "block";
-  renderizar(); // mostra imediatamente
+
+  renderizar(); // ⚡ aparece instantâneo
 }
 
 function filtrar(tipo) {
@@ -364,9 +371,15 @@ Promise.all([reqTurmas, reqAvisos])
     }
 
     avisos = dados;
+  ultimaAssinaturaAvisos = dados.length
+  ? dados[0].Data + "-" + dados.length
+  : "";
 
-    // 💾 atualiza cache
-    localStorage.setItem(cacheKey, JSON.stringify(dados));
+    
+    // 💾 atualiza cache COM VALIDADE
+  localStorage.setItem(cacheKey, JSON.stringify(dados));
+  localStorage.setItem(cacheTimeKey, Date.now());
+
 
     // 👁️ exibe avisos
     requestAnimationFrame(() => {
@@ -401,15 +414,15 @@ function carregarAvisosAutomatico() {
       ultimaAssinaturaAvisos = assinatura;
       avisos = dados;
 
-      // atualiza cache
-      localStorage.setItem(cacheKey, JSON.stringify(dados));
+      // atualiza cache COM TEMPO
+localStorage.setItem(cacheKey, JSON.stringify(dados));
+localStorage.setItem(cacheTimeKey, Date.now());
 
       // renderiza sem reload
       renderizar();
     })
     .catch(err => console.error("Erro na atualização automática:", err));
 }
-
 
 function icone(tipo) {
   if (tipo === "aviso") return "📢";
