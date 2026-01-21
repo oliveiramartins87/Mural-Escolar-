@@ -290,6 +290,31 @@ button.pulse {
   content: "";
   animation: dots 1.2s steps(3, end) infinite;
 }
+    /* loading no botão */
+button.loading {
+  pointer-events: none;
+  opacity: 0.8;
+  position: relative;
+}
+
+button.loading::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg) translate(-50%, -50%); }
+}
+
 </style>
 
 </head>
@@ -308,7 +333,7 @@ button.pulse {
   <h3>🔒 Área da Escola</h3>
     
   <input type="password" id="senha" placeholder="Digite a senha">
-  <button onclick="entrar()">Entrar</button>
+<button id="btn-entrar" onclick="entrar()">Entrar</button>
 </div>
 
 <!-- PAINEL DA ESCOLA (PROTEGIDO) -->
@@ -417,11 +442,16 @@ let muralCarregado = false;
 // 🔒 Área da escola
 function entrar() {
   const senha = document.getElementById("senha").value;
+  const botao = document.getElementById("btn-entrar");
 
   if (!senha) {
     alert("Digite a senha.");
     return;
   }
+
+  // ativa loading
+  botao.classList.add("loading");
+  botao.textContent = "Verificando";
 
   fetch(
     URL_API +
@@ -436,13 +466,19 @@ function entrar() {
       document.getElementById("painel-escola").style.display = "block";
     } else {
       alert("Senha incorreta");
+      resetBotao();
     }
   })
   .catch(() => {
     alert("Erro ao validar senha. Tente novamente.");
+    resetBotao();
   });
-}
 
+  function resetBotao() {
+    botao.classList.remove("loading");
+    botao.textContent = "Entrar";
+  }
+}
 
 function abrirMuralGeral() {
   document.getElementById("painel-escola").style.display = "none";
