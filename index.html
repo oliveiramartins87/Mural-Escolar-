@@ -366,6 +366,17 @@ button.loading::before {
     margin: 0; /* remove margem vertical antiga */
   }
 }
+/* ===== AJUSTE QUANDO MURAL ESTIVER ABERTO ===== */
+body.mural-aberto {
+  align-items: flex-start; /* tira centralização vertical */
+}
+
+@media (min-width: 900px) {
+  body.mural-aberto .portal {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
 
 
 </style>
@@ -446,7 +457,7 @@ button.loading::before {
   <div id="lista-avisos"></div>
 </div>
 
-
+<div id="area-responsaveis">
   <p style="color:#fff; font-size:14px; max-width:360px;">
   Acompanhe os avisos da turma do seu filho de forma simples e rápida.
 </p>
@@ -466,7 +477,7 @@ button.loading::before {
   Acessar Mural da Turma
 </button>
 </div>
-
+</div>
 <div class="aviso-notificacoes">
   <p class="titulo">🔔 Receba avisos da escola</p>
 
@@ -534,14 +545,20 @@ function entrar() {
 }
 
 function abrirMuralGeral() {
+  document.body.classList.add("mural-aberto");
+
   document.getElementById("painel-escola").style.display = "none";
   document.getElementById("mural-escola").style.display = "block";
+
+  // 🔴 ESCONDE ÁREA DOS RESPONSÁVEIS
+  document.getElementById("area-responsaveis").style.display = "none";
 
   if (!muralCarregado) {
     carregarMuralGeral();
     muralCarregado = true;
   }
 }
+
 
 function criarAviso() {
   const titulo = document.getElementById("tituloAviso").value.trim();
@@ -663,9 +680,13 @@ fetch(URL_API + "?tipo=turmas")
     alert("Erro ao carregar as turmas. Tente novamente.");
   });
 function voltarPainel() {
+  document.body.classList.remove("mural-aberto");
+
   document.getElementById("mural-escola").style.display = "none";
   document.getElementById("painel-escola").style.display = "block";
-  
+
+  // 🔵 MOSTRA DE NOVO
+  document.getElementById("area-responsaveis").style.display = "block";
 }
 
 function carregarMuralGeral() {
