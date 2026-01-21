@@ -3,215 +3,696 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal de Avisos</title>
 
+<title>Portal de Avisos</title>
+    <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-75KT9D292T"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-75KT9D292T');
+  </script>
+
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#4169E1">
 
 <style>
-* { box-sizing: border-box; }
+/* ===============================
+   RESET + BASE
+   =============================== */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Helvetica, Arial, sans-serif;
   background: linear-gradient(135deg, #1e3a8a, #4169E1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #fff;
 }
 
+/* ===============================
+   CONTAINER PRINCIPAL
+   =============================== */
 .portal {
+  width: 100%;
   max-width: 420px;
-  margin: auto;
   padding: 20px;
   text-align: center;
 }
 
+/* ===============================
+   LOGO
+   =============================== */
+.portal img {
+  height: 160px;
+  margin-bottom: 12px;
+}
+
+/* ===============================
+   TÍTULOS
+   =============================== */
+h1 {
+  font-size: 24px;
+  margin: 4px 0;
+  font-weight: 700;
+}
+
+.portal > p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   CARTÕES (BOX)
+   =============================== */
 .box {
   background: #fff;
   color: #111;
   padding: 20px;
   border-radius: 18px;
   margin: 16px auto;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+  animation: fadeUp 0.4s ease;
 }
 
+/* animação suave */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.box h3 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #1e3a8a;
+}
+
+/* ===============================
+   INPUTS
+   =============================== */
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  outline: none;
+}
+textarea {
+  width: 100%;
+  padding: 14px;
+  margin: 12px 0;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  resize: vertical; /* permite aumentar pra baixo, mas não pros lados */
+}
+
+input:focus {
+  border-color: #4169E1;
+  box-shadow: 0 0 0 2px rgba(65,105,225,0.2);
+}
+
+/* ===============================
+   BOTÕES
+   =============================== */
+/* ===============================
+   BOTÕES COM ANIMAÇÃO MODERNA
+   =============================== */
 button {
   width: 100%;
   padding: 14px;
   margin-top: 10px;
+  font-size: 16px;
+  font-weight: 600;
   border-radius: 14px;
   border: none;
-  font-weight: 600;
   cursor: pointer;
+
+  /* visual moderno */
   background: linear-gradient(135deg, #1e3a8a, #4169E1);
   color: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+
+  /* animação */
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
 }
 
-input, textarea, select {
+/* hover (PC) */
+button:hover {
+  filter: brightness(1.05);
+}
+
+/* clique / toque */
+button:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+/* foco acessível */
+button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(65,105,225,0.35),
+    0 8px 18px rgba(0,0,0,0.25);
+}
+
+/* botão secundário */
+button.secundario {
+  background: linear-gradient(135deg, #4169E1, #60a5fa);
+}
+
+
+/* botão secundário (cadastro) */
+button.secundario {
+  background: #4169E1;
+}
+
+/* ===============================
+   TEXTO DE APOIO
+   =============================== */
+.texto-apoio {
+  font-size: 13px;
+  color: #374151;
+  margin-top: 8px;
+}
+
+/* ===============================
+   AVISO DE NOTIFICAÇÕES
+   =============================== */
+.aviso-notificacoes {
+  background: rgba(255,255,255,0.15);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 18px;
+  font-size: 13px;
+}
+
+.aviso-notificacoes .titulo {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.aviso-notificacoes p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+/* ===============================
+   RESPONSIVO (TELAS MAIORES)
+   =============================== */
+@media (min-width: 600px) {
+  .portal {
+    max-width: 460px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+}
+    /* ===============================
+   SELECT DE TURMAS (MAIOR E MODERNO)
+   =============================== */
+select {
   width: 100%;
-  padding: 14px;
+  padding: 16px;              /* altura maior */
   margin: 12px 0;
+  font-size: 17px;            /* texto maior */
   border-radius: 12px;
   border: 1px solid #d1d5db;
+  background-color: #fff;
+  outline: none;
+  appearance: none;           /* remove estilo padrão */
 }
 
-.layout-escola {
-  display: grid;
-  gap: 24px;
+/* foco ao tocar */
+select:focus {
+  border-color: #4169E1;
+  box-shadow: 0 0 0 2px rgba(65,105,225,0.2);
 }
 
-.menu-lateral {
-  display: none;
+/* wrapper para setinha moderna */
+.select-wrapper {
+  position: relative;
 }
 
-@media (min-width: 1000px) {
-  .layout-escola {
-    grid-template-columns: 240px 1fr;
-  }
+.select-wrapper::after {
+  content: "▾";
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: #1e3a8a;
+}
+/* ===============================
+   ANIMAÇÃO PULSE (OPCIONAL)
+   =============================== */
+button.pulse {
+  animation: pulse 1.2s ease-in-out;
+}
 
-  .menu-lateral {
-    display: flex;
-    flex-direction: column;
-    background: #0f172a;
-    padding: 24px;
-    border-radius: 18px;
-  }
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+@keyframes dots {
+  0% { content: ""; }
+  33% { content: "."; }
+  66% { content: ".."; }
+  100% { content: "..."; }
+}
 
-  .menu-lateral button {
-    background: none;
-    text-align: left;
-  }
+.saving::after {
+  content: "";
+  animation: dots 1.2s steps(3, end) infinite;
+}
+    /* loading no botão */
+button.loading {
+  pointer-events: none;
+  opacity: 0.8;
+  position: relative;
+}
 
-  .menu-lateral .sair {
-    margin-top: auto;
-    background: rgba(220,38,38,0.2);
-  }
+button.loading {
+  pointer-events: none;
+  opacity: 0.85;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
 
-  .portal {
-    max-width: 1200px;
-    text-align: left;
+button.loading::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+
+  border: 3px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+
+  display: inline-block;
+  box-sizing: border-box;
+
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
+/* ===============================
+   DESKTOP: MURAL MAIS LARGO
+   =============================== */
+@media (min-width: 900px) {
+
+  /* quando estiver no mural da escola */
+  #mural-escola {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* lista de avisos em grade */
+  #lista-avisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* cards ficam mais confortáveis */
+  #lista-avisos .box {
+    margin: 0;
+  }
+}
+
+
 </style>
+
 </head>
 
 <body>
 
 <div class="portal">
 
-  <img src="logo.png" style="height:160px">
-  <h1>IE Sarah Kubitschek</h1>
-  <p>Portal de Avisos</p>
+  <img src="logo.png" alt="Logo da escola" style="height:200px;">
+  <h1 style="margin-bottom:4px;">IE Sarah Kubitschek</h1>
+  <p style="opacity:0.9;">Portal de Avisos</p>
 
-  <!-- LOGIN -->
-  <div class="box" id="login-escola">
-    <h3>🔒 Área da Escola</h3>
-    <input type="password" id="senha" placeholder="Digite a senha">
-    <button onclick="entrar()">Entrar</button>
-  </div>
-
-  <!-- PAINEL -->
-  <div id="painel-escola" style="display:none">
-
-    <div class="layout-escola">
-
-      <aside class="menu-lateral">
-        <h3>🏫 IE Sarah</h3>
-        <button onclick="mostrarCriar()">📢 Criar Aviso</button>
-        <button onclick="mostrarMural()">📋 Mural Geral</button>
-        <button class="sair" onclick="sair()">🚪 Sair</button>
-      </aside>
-
-      <div class="conteudo-escola">
-
-        <!-- CRIAR -->
-        <div id="criar-aviso" class="box">
-          <h3>📢 Criar Aviso</h3>
-          <input id="tituloAviso" placeholder="Título">
-          <textarea id="mensagemAviso" rows="5" placeholder="Mensagem"></textarea>
-          <select id="tipoAviso">
-            <option value="aviso">Aviso</option>
-            <option value="reuniao">Reunião</option>
-            <option value="urgente">Urgente</option>
-          </select>
-          <select id="turmaAviso"></select>
-          <select id="fixadoAviso">
-            <option value="NAO">Não fixar</option>
-            <option value="SIM">Fixar</option>
-          </select>
-          <button onclick="criarAviso()">Salvar Aviso</button>
-          <p id="feedback-aviso" style="display:none"></p>
-        </div>
-
-        <!-- MURAL -->
-        <div id="mural-escola" class="box" style="display:none">
-          <h3>📋 Mural Geral</h3>
-          <div id="lista-avisos"></div>
-        </div>
-
-      </div>
-    </div>
-  </div>
+  <!-- ÁREA DA ESCOLA -->
+  <!-- ÁREA DA ESCOLA -->
+<div class="box" id="login-escola">
+  <h3>🔒 Área da Escola</h3>
+    
+  <input type="password" id="senha" placeholder="Digite a senha">
+<button id="btn-entrar" onclick="entrar()">Entrar</button>
 </div>
 
-<script>
-const URL_API = "SUA_URL_AQUI";
-let muralCarregado = false;
+<!-- PAINEL DA ESCOLA (PROTEGIDO) -->
+<div class="box" id="painel-escola" style="display:none;">
+  <h3>🏫 Área da Escola</h3>
+<button class="secundario" onclick="sair()">🚪 Sair da Área da Escola</button>
+<hr style="margin:16px 0;">
 
+  <h3>📢 Criar Aviso</h3>
+
+  <input id="tituloAviso" placeholder="Título do aviso">
+
+  <textarea id="mensagemAviso" rows="6"
+    placeholder="Mensagem do aviso"></textarea>
+
+  <select id="tipoAviso">
+    <option value="aviso">📢 Aviso</option>
+    <option value="reuniao">📅 Reunião</option>
+    <option value="urgente">⚠️ Urgente</option>
+  </select>
+
+  <select id="turmaAviso">
+    <option value="GERAL">🌐 Geral</option>
+  </select>
+
+  <select id="fixadoAviso">
+    <option value="NAO">📌 Não fixar</option>
+    <option value="SIM">📌 Fixar no topo</option>
+  </select>
+
+  <button onclick="criarAviso()">Salvar Aviso</button>
+    <p id="feedback-aviso"
+   style="display:none;
+          margin-top:12px;
+          color:#16a34a;
+          font-weight:600;
+          text-align:center;
+          animation: fadeUp .3s ease;">
+  ✅ Aviso publicado com sucesso
+</p>
+
+
+<hr style="margin:20px 0;">
+
+<button onclick="abrirMuralGeral()">
+📋 Mural Geral
+</button>
+
+</div>
+<!-- MURAL GERAL DA ESCOLA -->
+<div class="box" id="mural-escola" style="display:none;">
+  <h3>📋 Mural Geral da Escola</h3>
+
+  <button class="secundario" onclick="voltarPainel()">⬅ Voltar</button>
+  <button class="secundario" onclick="sair()">🚪 Sair da Área da Escola</button>
+
+  <div id="lista-avisos"></div>
+</div>
+
+
+  <p style="color:#fff; font-size:14px; max-width:360px;">
+  Acompanhe os avisos da turma do seu filho de forma simples e rápida.
+</p>
+
+  <!-- RESPONSÁVEIS -->
+<div class="box">
+  <h3>👨‍👩‍👧‍👦 Acesso dos Responsáveis</h3>
+<div class="select-wrapper">
+  <select id="turma">
+    <option value="">Selecione a turma</option>
+    <option value="IFLGCH1001">IFLGCH1001</option>
+    <option value="IFLGCH1002">IFLGCH1002</option>
+    <!-- demais turmas -->
+  </select>
+</div>
+<button class="pulse" onclick="abrirTurma()">
+  Acessar Mural da Turma
+</button>
+</div>
+
+<div class="aviso-notificacoes">
+  <p class="titulo">🔔 Receba avisos da escola</p>
+
+<p>
+  Ative as notificações para receber <strong>comunicados importantes</strong>.
+</p>
+
+<p>
+  📱 iPhone: Compartilhar → Adicionar à Tela de Início
+</p>
+
+<p>
+  🤖 Android / PC: permita as notificações quando solicitado
+</p>
+
+<p>
+  📲 <strong>WhatsApp da Escola:</strong>
+  <a href="https://wa.me/5521996931398" target="_blank">
+    21 99693-1398
+  </a>
+</p>
+</div>
+<script>
+const URL_API = "https://script.google.com/macros/s/AKfycbxmhMemcvvYttb2FD9Qo_smFJo3e6JgmSQs4kdyPbVyLZZEJkW6e9V7wUs_MmFDPp5mQA/exec";
+let muralCarregado = false;
+// 🔒 Área da escola
 function entrar() {
   const senha = document.getElementById("senha").value;
-  fetch(URL_API + "?tipo=login&senha=" + encodeURIComponent(senha))
-    .then(r => r.json())
-    .then(resp => {
-      if (resp.status === "OK") {
-        localStorage.setItem("auth_escola","ok");
-        document.getElementById("login-escola").style.display = "none";
-        document.getElementById("painel-escola").style.display = "block";
-        mostrarCriar();
-      } else {
-        alert("Senha incorreta");
-      }
-    });
+  const botao = document.getElementById("btn-entrar");
+
+  if (!senha) {
+    alert("Digite a senha.");
+    return;
+  }
+
+  // ativa loading
+  botao.classList.add("loading");
+  botao.textContent = "Verificando acesso";
+
+  fetch(
+    URL_API +
+    "?tipo=login" +
+    "&senha=" + encodeURIComponent(senha)
+  )
+  .then(r => r.json())
+  .then(resp => {
+    if (resp.status === "OK") {
+      localStorage.setItem("auth_escola", "ok");
+      document.getElementById("login-escola").style.display = "none";
+      document.getElementById("painel-escola").style.display = "block";
+    } else {
+      alert("Senha incorreta");
+      resetBotao();
+    }
+  })
+  .catch(() => {
+    alert("Erro ao validar senha. Tente novamente.");
+    resetBotao();
+  });
+
+  function resetBotao() {
+    botao.classList.remove("loading");
+    botao.textContent = "Entrar";
+  }
 }
 
-function mostrarCriar() {
-  document.getElementById("criar-aviso").style.display = "block";
-  document.getElementById("mural-escola").style.display = "none";
-}
-
-function mostrarMural() {
-  document.getElementById("criar-aviso").style.display = "none";
+function abrirMuralGeral() {
+  document.getElementById("painel-escola").style.display = "none";
   document.getElementById("mural-escola").style.display = "block";
 
   if (!muralCarregado) {
-    carregarMural();
+    carregarMuralGeral();
     muralCarregado = true;
   }
 }
 
+function criarAviso() {
+  const titulo = document.getElementById("tituloAviso").value.trim();
+  const mensagem = document.getElementById("mensagemAviso").value.trim();
+  const categoria = document.getElementById("tipoAviso").value;
+  const turma = document.getElementById("turmaAviso").value;
+  const fixado = document.getElementById("fixadoAviso").value;
+
+  if (!titulo || !mensagem) {
+    alert("Preencha título e mensagem.");
+    return;
+  }
+
+// prepara feedback
+const feedback = document.getElementById("feedback-aviso");
+const botao = document.querySelector('button[onclick="criarAviso()"]');
+
+// estado: salvando
+feedback.style.display = "block";
+feedback.style.color = "#2563eb"; // azul
+feedback.textContent = "💾 Salvando aviso";
+feedback.classList.add("saving");
+
+botao.disabled = true;
+botao.style.opacity = "0.7";
+
+fetch(
+  URL_API +
+  "?tipo=criar_aviso" +
+  "&titulo=" + encodeURIComponent(titulo) +
+  "&mensagem=" + encodeURIComponent(mensagem) +
+  "&tipoAviso=" + categoria +
+  "&turma=" + turma +
+  "&fixado=" + fixado +
+  "&ativo=SIM"
+)
+.then(() => {
+  // limpa campos
+  document.getElementById("tituloAviso").value = "";
+  document.getElementById("mensagemAviso").value = "";
+
+  // sucesso
+  feedback.classList.remove("saving");
+  feedback.style.color = "#16a34a"; // verde
+  feedback.textContent = "✅ Aviso publicado com sucesso";
+
+  setTimeout(() => {
+    feedback.style.display = "none";
+    botao.disabled = false;
+    botao.style.opacity = "1";
+  }, 3000);
+})
+.catch(() => {
+  feedback.classList.remove("saving");
+  feedback.style.color = "#dc2626"; // vermelho
+  feedback.textContent = "❌ Erro ao salvar o aviso";
+
+  botao.disabled = false;
+  botao.style.opacity = "1";
+});
+
+
+} // 👈 FECHA criarAviso()
+
+
+// 🔹 Abrir mural da turma
+function abrirTurma() {
+  const turma = document.getElementById("turma").value;
+
+  if (!turma) {
+    alert("Selecione a turma.");
+    return;
+  }
+
+  localStorage.setItem("ultimaTurma", turma);
+  window.location.href =
+    "mural.html?turma=" + encodeURIComponent(turma);
+}
+    if (localStorage.getItem("auth_escola") === "ok") {
+  document.getElementById("login-escola").style.display = "none";
+  document.getElementById("painel-escola").style.display = "block";
+}
 function sair() {
   localStorage.removeItem("auth_escola");
   location.reload();
 }
+// 🔹 Carregar turmas da planilha
+fetch(URL_API + "?tipo=turmas")
+  .then(r => r.json())
+  .then(turmas => {
 
-function carregarMural() {
+    // SELECT DOS RESPONSÁVEIS
+    const selectResp = document.getElementById("turma");
+    selectResp.innerHTML = '<option value="">Selecione a turma</option>';
+
+    // SELECT DA ESCOLA (CRIAR AVISO)
+    const selectAviso = document.getElementById("turmaAviso");
+    selectAviso.innerHTML = '<option value="GERAL">🌐 Geral</option>';
+
+    turmas.forEach(turma => {
+      // responsáveis
+      const opt1 = document.createElement("option");
+      opt1.value = turma;
+      opt1.textContent = turma;
+      selectResp.appendChild(opt1);
+
+      // escola
+      const opt2 = document.createElement("option");
+      opt2.value = turma;
+      opt2.textContent = turma;
+      selectAviso.appendChild(opt2);
+    });
+
+    // última turma usada (responsáveis)
+    const ultima = localStorage.getItem("ultimaTurma");
+    if (ultima) selectResp.value = ultima;
+  })
+  .catch(() => {
+    alert("Erro ao carregar as turmas. Tente novamente.");
+  });
+function voltarPainel() {
+  document.getElementById("mural-escola").style.display = "none";
+  document.getElementById("painel-escola").style.display = "block";
+  
+}
+
+function carregarMuralGeral() {
   const lista = document.getElementById("lista-avisos");
-  lista.innerHTML = "Carregando...";
+  lista.innerHTML = "<p>⏳ Carregando avisos...</p>";
+
   fetch(URL_API)
     .then(r => r.json())
     .then(avisos => {
       lista.innerHTML = "";
+
       avisos.forEach(a => {
-        lista.innerHTML += `<div class="box"><b>${a.Titulo}</b><p>${a.Mensagem}</p></div>`;
+        const card = document.createElement("div");
+        card.className = "box";
+
+        const titulo = a.Titulo
+          ? `<strong>${a.Titulo}</strong><br>`
+          : "";
+
+        card.innerHTML = `
+          ${titulo}
+          <small><b>Turma:</b> ${a.Turma || "GERAL"}</small>
+          <p>${a.Mensagem || ""}</p>
+        `;
+
+        lista.appendChild(card);
       });
+
+      if (avisos.length === 0) {
+        lista.innerHTML = "<p>Nenhum aviso publicado.</p>";
+      }
+    })
+    .catch(() => {
+      lista.innerHTML = "<p>❌ Erro ao carregar avisos.</p>";
     });
 }
 
-if (localStorage.getItem("auth_escola") === "ok") {
-  document.getElementById("login-escola").style.display = "none";
-  document.getElementById("painel-escola").style.display = "block";
-  mostrarCriar();
-}
 </script>
 
+
 </body>
-</html>
+</html>   
