@@ -279,7 +279,17 @@ button.pulse {
   50%  { transform: scale(1.03); }
   100% { transform: scale(1); }
 }
+@keyframes dots {
+  0% { content: ""; }
+  33% { content: "."; }
+  66% { content: ".."; }
+  100% { content: "..."; }
+}
 
+.saving::after {
+  content: "";
+  animation: dots 1.2s steps(3, end) infinite;
+}
 </style>
 
 </head>
@@ -423,39 +433,52 @@ function criarAviso() {
     return;
   }
 
- fetch(
+// prepara feedback
+const feedback = document.getElementById("feedback-aviso");
+const botao = document.querySelector('button[onclick="criarAviso()"]');
+
+// estado: salvando
+feedback.style.display = "block";
+feedback.style.color = "#2563eb"; // azul
+feedback.textContent = "💾 Salvando aviso";
+feedback.classList.add("saving");
+
+botao.disabled = true;
+botao.style.opacity = "0.7";
+
+fetch(
   URL_API +
   "?tipo=criar_aviso" +
   "&titulo=" + encodeURIComponent(titulo) +
   "&mensagem=" + encodeURIComponent(mensagem) +
-  "&categoria=" + categoria +
+  "&tipoAviso=" + categoria +
   "&turma=" + turma +
   "&fixado=" + fixado +
   "&ativo=SIM"
-
 )
 .then(() => {
   // limpa campos
   document.getElementById("tituloAviso").value = "";
   document.getElementById("mensagemAviso").value = "";
 
-  // prepara feedback
-  const feedback = document.getElementById("feedback-aviso");
-  feedback.style.display = "none";
+  // sucesso
+  feedback.classList.remove("saving");
+  feedback.style.color = "#16a34a"; // verde
   feedback.textContent = "✅ Aviso publicado com sucesso";
 
-  // mostra feedback
-  setTimeout(() => {
-    feedback.style.display = "block";
-  }, 50);
-
-  // esconde após 3s
   setTimeout(() => {
     feedback.style.display = "none";
+    botao.disabled = false;
+    botao.style.opacity = "1";
   }, 3000);
 })
 .catch(() => {
-  alert("Erro ao publicar o aviso. Tente novamente.");
+  feedback.classList.remove("saving");
+  feedback.style.color = "#dc2626"; // vermelho
+  feedback.textContent = "❌ Erro ao salvar o aviso";
+
+  botao.disabled = false;
+  botao.style.opacity = "1";
 });
 
 
