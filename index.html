@@ -430,7 +430,9 @@ function criarAviso() {
   "&mensagem=" + encodeURIComponent(mensagem) +
   "&categoria=" + categoria +
   "&turma=" + turma +
-  "&fixado=" + fixado
+  "&fixado=" + fixado +
+  "&ativo=SIM"
+
 )
 .then(() => {
   // limpa campos
@@ -485,26 +487,36 @@ function sair() {
 fetch(URL_API + "?tipo=turmas")
   .then(r => r.json())
   .then(turmas => {
-    const select = document.getElementById("turma");
 
-    // limpa opções antigas (inclusive as fixas)
-    select.innerHTML = '<option value="">Selecione a turma</option>';
+    // SELECT DOS RESPONSÁVEIS
+    const selectResp = document.getElementById("turma");
+    selectResp.innerHTML = '<option value="">Selecione a turma</option>';
+
+    // SELECT DA ESCOLA (CRIAR AVISO)
+    const selectAviso = document.getElementById("turmaAviso");
+    selectAviso.innerHTML = '<option value="GERAL">🌐 Geral</option>';
 
     turmas.forEach(turma => {
-      const opt = document.createElement("option");
-      opt.value = turma;
-      opt.textContent = turma;
-      select.appendChild(opt);
+      // responsáveis
+      const opt1 = document.createElement("option");
+      opt1.value = turma;
+      opt1.textContent = turma;
+      selectResp.appendChild(opt1);
+
+      // escola
+      const opt2 = document.createElement("option");
+      opt2.value = turma;
+      opt2.textContent = turma;
+      selectAviso.appendChild(opt2);
     });
 
-    // última turma usada
+    // última turma usada (responsáveis)
     const ultima = localStorage.getItem("ultimaTurma");
-    if (ultima) select.value = ultima;
+    if (ultima) selectResp.value = ultima;
   })
   .catch(() => {
-  alert("Erro ao carregar as turmas. Tente novamente.");
-});
-
+    alert("Erro ao carregar as turmas. Tente novamente.");
+  });
 
 </script>
 
