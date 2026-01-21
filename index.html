@@ -330,11 +330,23 @@ button.pulse {
   </select>
 
   <button onclick="criarAviso()">Salvar Aviso</button>
+    <p id="feedback-aviso"
+   style="display:none;
+          margin-top:12px;
+          color:#16a34a;
+          font-weight:600;
+          text-align:center;
+          animation: fadeUp .3s ease;">
+  ✅ Aviso publicado com sucesso
+</p>
+
+
 <hr style="margin:20px 0;">
 
-<h3>📋 Avisos Criados</h3>
+<button onclick="abrirMuralGeral()">
+📋 Mural Geral
+</button>
 
-<div id="lista-avisos"></div>
 
 </div>
 
@@ -390,14 +402,13 @@ function entrar() {
       localStorage.setItem("auth_escola", "ok");
     document.getElementById("login-escola").style.display = "none";
     document.getElementById("painel-escola").style.display = "block";
-      listarAvisosEscola();
 
   } else {
     alert("Senha incorreta");
   }
 }
 function abrirMuralGeral() {
-  window.location.href = "mural.html";
+  window.open("mural.html?turma=GERAL", "_blank");
 }
 
 function criarAviso() {
@@ -412,47 +423,42 @@ function criarAviso() {
     return;
   }
 
-  fetch(
-    URL_API +
-    "?tipo=criar_aviso" +
-    "&titulo=" + encodeURIComponent(titulo) +
-    "&mensagem=" + encodeURIComponent(mensagem) +
-    "&categoria=" + categoria +
-    "&turma=" + turma +
-    "&fixado=" + fixado
-  )
-  .then(() => {
-    alert("Aviso criado com sucesso!");
-    document.getElementById("tituloAviso").value = "";
-    document.getElementById("mensagemAviso").value = "";
-  })
-  .catch(() => alert("Erro ao criar aviso"));
-}
+ fetch(
+  URL_API +
+  "?tipo=criar_aviso" +
+  "&titulo=" + encodeURIComponent(titulo) +
+  "&mensagem=" + encodeURIComponent(mensagem) +
+  "&categoria=" + categoria +
+  "&turma=" + turma +
+  "&fixado=" + fixado
+)
+.then(() => {
+  // limpa campos
+  document.getElementById("tituloAviso").value = "";
+  document.getElementById("mensagemAviso").value = "";
 
-// 🔹 Carregar turmas da planilha
-fetch(URL_API + "?tipo=turmas")
-  .then(r => r.json())
-  .then(turmas => {
-    const select = document.getElementById("turma");
+  // prepara feedback
+  const feedback = document.getElementById("feedback-aviso");
+  feedback.style.display = "none";
+  feedback.textContent = "✅ Aviso publicado com sucesso";
 
-    // limpa opções antigas (inclusive as fixas)
-    select.innerHTML = '<option value="">Selecione a turma</option>';
+  // mostra feedback
+  setTimeout(() => {
+    feedback.style.display = "block";
+  }, 50);
 
-    turmas.forEach(turma => {
-      const opt = document.createElement("option");
-      opt.value = turma;
-      opt.textContent = turma;
-      select.appendChild(opt);
-    });
+  // esconde após 3s
+  setTimeout(() => {
+    feedback.style.display = "none";
+  }, 3000);
+})
+.catch(() => {
+  alert("Erro ao publicar o aviso. Tente novamente.");
+});
 
-    // última turma usada
-    const ultima = localStorage.getItem("ultimaTurma");
-    if (ultima) select.value = ultima;
-  })
-  .catch(err => {
-    console.error("Erro ao carregar turmas:", err);
-    alert("Erro ao carregar turmas. Tente novamente.");
-  });
+
+} // 👈 FECHA criarAviso()
+
 
 // 🔹 Abrir mural da turma
 function abrirTurma() {
@@ -475,64 +481,30 @@ function sair() {
   localStorage.removeItem("auth_escola");
   location.reload();
 }
-function listarAvisosEscola() {
-  fetch(URL_API)
-    .then(r => r.json())
-    .then(avisos => {
-      const lista = document.getElementById("lista-avisos");
-      lista.innerHTML = "";
+// 🔹 Carregar turmas da planilha
+fetch(URL_API + "?tipo=turmas")
+  .then(r => r.json())
+  .then(turmas => {
+    const select = document.getElementById("turma");
 
-      if (!avisos || avisos.length === 0) {
-        lista.innerHTML = "<p>Nenhum aviso criado.</p>";
-        return;
-      }
+    // limpa opções antigas (inclusive as fixas)
+    select.innerHTML = '<option value="">Selecione a turma</option>';
 
-      avisos.forEach(aviso => {
-        const div = document.createElement("div");
-        div.style = `
-          border:1px solid #ddd;
-          border-radius:12px;
-          padding:12px;
-          margin-bottom:10px;
-          background:#f8fafc;
-          text-align:left;
-        `;
-
-        div.innerHTML = `
-          <strong>${aviso.Titulo}</strong><br>
-          <small>
-            ${aviso.Tipo?.toUpperCase()} • ${aviso.Turma} <br>
-            📅 ${aviso.Data}
-          </small>
-
-          <p style="margin:8px 0;">${aviso.Mensagem}</p>
-
-          <button class="secundario"
-            onclick="excluirAviso(${aviso.__linha})">
-            🗑️ Excluir
-          </button>
-        `;
-
-        lista.appendChild(div);
-      });
-    })
-    .catch(() => {
-      document.getElementById("lista-avisos").innerHTML =
-        "<p>Erro ao carregar avisos.</p>";
+    turmas.forEach(turma => {
+      const opt = document.createElement("option");
+      opt.value = turma;
+      opt.textContent = turma;
+      select.appendChild(opt);
     });
-}
-function excluirAviso(linha) {
-  if (!confirm("Tem certeza que deseja excluir este aviso?")) return;
 
-  fetch(URL_API + "?tipo=excluir_aviso&linha=" + linha)
-    .then(() => {
-      alert("Aviso excluído com sucesso!");
-      listarAvisosEscola(); // atualiza a lista
-    })
-    .catch(() => {
-      alert("Erro ao excluir aviso.");
-    });
-}
+    // última turma usada
+    const ultima = localStorage.getItem("ultimaTurma");
+    if (ultima) select.value = ultima;
+  })
+  .catch(() => {
+  alert("Erro ao carregar as turmas. Tente novamente.");
+});
+
 
 </script>
 
