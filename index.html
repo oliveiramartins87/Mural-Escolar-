@@ -416,15 +416,33 @@ const URL_API = "https://script.google.com/macros/s/AKfycbzGvwJvZN6Fq_EDWHEWIesL
 let muralCarregado = false;
 // 🔒 Área da escola
 function entrar() {
-  if (document.getElementById("senha").value === "ESCOLA123") {
-      localStorage.setItem("auth_escola", "ok");
-    document.getElementById("login-escola").style.display = "none";
-    document.getElementById("painel-escola").style.display = "block";
+  const senha = document.getElementById("senha").value;
 
-  } else {
-    alert("Senha incorreta");
+  if (!senha) {
+    alert("Digite a senha.");
+    return;
   }
+
+  fetch(
+    URL_API +
+    "?tipo=login" +
+    "&senha=" + encodeURIComponent(senha)
+  )
+  .then(r => r.json())
+  .then(resp => {
+    if (resp.status === "OK") {
+      localStorage.setItem("auth_escola", "ok");
+      document.getElementById("login-escola").style.display = "none";
+      document.getElementById("painel-escola").style.display = "block";
+    } else {
+      alert("Senha incorreta");
+    }
+  })
+  .catch(() => {
+    alert("Erro ao validar senha. Tente novamente.");
+  });
 }
+
 
 function abrirMuralGeral() {
   document.getElementById("painel-escola").style.display = "none";
