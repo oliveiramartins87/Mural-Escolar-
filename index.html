@@ -293,7 +293,7 @@ button.pulse {
     /* loading no botão */
 button.loading {
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.85;
   position: relative;
 }
 
@@ -312,8 +312,11 @@ button.loading::after {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg) translate(-50%, -50%); }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
+
 
 </style>
 
@@ -333,7 +336,8 @@ button.loading::after {
   <h3>🔒 Área da Escola</h3>
     
   <input type="password" id="senha" placeholder="Digite a senha">
-  <button onclick="entrar()">Entrar</button>
+  <button id="btn-entrar" onclick="entrar()">Entrar</button>
+
 </div>
 
 <!-- PAINEL DA ESCOLA (PROTEGIDO) -->
@@ -442,11 +446,16 @@ let muralCarregado = false;
 // 🔒 Área da escola
 function entrar() {
   const senha = document.getElementById("senha").value;
+  const botao = document.getElementById("btn-entrar");
 
   if (!senha) {
     alert("Digite a senha.");
     return;
   }
+
+  // 🔵 ATIVA LOADING
+  botao.classList.add("loading");
+  botao.textContent = "Verificando acesso";
 
   fetch(
     URL_API +
@@ -461,13 +470,19 @@ function entrar() {
       document.getElementById("painel-escola").style.display = "block";
     } else {
       alert("Senha incorreta");
+      resetBotao();
     }
   })
   .catch(() => {
     alert("Erro ao validar senha. Tente novamente.");
+    resetBotao();
   });
-}
 
+  function resetBotao() {
+    botao.classList.remove("loading");
+    botao.textContent = "Entrar";
+  }
+}
 
 function abrirMuralGeral() {
   document.getElementById("painel-escola").style.display = "none";
