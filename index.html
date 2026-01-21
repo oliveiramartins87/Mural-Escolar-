@@ -331,6 +331,29 @@ button.loading::before {
     transform: rotate(360deg);
   }
 }
+/* ===============================
+   DESKTOP: MURAL MAIS LARGO
+   =============================== */
+@media (min-width: 900px) {
+
+  /* quando estiver no mural da escola */
+  #mural-escola {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* lista de avisos em grade */
+  #lista-avisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* cards ficam mais confortáveis */
+  #lista-avisos .box {
+    margin: 0;
+  }
+}
 
 
 </style>
