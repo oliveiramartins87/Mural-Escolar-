@@ -357,7 +357,15 @@ button.pulse {
 📋 Mural Geral
 </button>
 
+</div>
+<!-- MURAL GERAL DA ESCOLA -->
+<div class="box" id="mural-escola" style="display:none;">
+  <h3>📋 Mural Geral da Escola</h3>
 
+  <button class="secundario" onclick="voltarPainel()">⬅ Voltar</button>
+  <button class="secundario" onclick="sair()">🚪 Sair da Área da Escola</button>
+
+  <div id="lista-avisos"></div>
 </div>
 
 
@@ -417,8 +425,16 @@ function entrar() {
     alert("Senha incorreta");
   }
 }
+let muralCarregado = false;
+
 function abrirMuralGeral() {
-  window.open("mural.html?turma=GERAL", "_blank");
+  document.getElementById("painel-escola").style.display = "none";
+  document.getElementById("mural-escola").style.display = "block";
+
+  if (!muralCarregado) {
+    carregarMuralGeral();
+    muralCarregado = true;
+  }
 }
 
 function criarAviso() {
@@ -540,6 +556,35 @@ fetch(URL_API + "?tipo=turmas")
   .catch(() => {
     alert("Erro ao carregar as turmas. Tente novamente.");
   });
+function voltarPainel() {
+  document.getElementById("mural-escola").style.display = "none";
+  document.getElementById("painel-escola").style.display = "block";
+  muralCarregado = false;
+}
+
+function carregarMuralGeral() {
+  fetch(URL_API)
+    .then(r => r.json())
+    .then(avisos => {
+      const lista = document.getElementById("lista-avisos");
+      lista.innerHTML = "";
+
+      avisos.forEach(a => {
+        const card = document.createElement("div");
+        card.className = "box";
+        card.innerHTML = `
+          <strong>${a.Titulo}</strong><br>
+          <small><b>Turma:</b> ${a.Turma}</small>
+          <p>${a.Mensagem}</p>
+        `;
+        lista.appendChild(card);
+      });
+    })
+    .catch(() => {
+      document.getElementById("lista-avisos").innerHTML =
+        "<p>Erro ao carregar avisos.</p>";
+    });
+}
 
 </script>
 
