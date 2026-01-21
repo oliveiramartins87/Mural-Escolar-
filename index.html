@@ -33,6 +33,9 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
                Roboto, Helvetica, Arial, sans-serif;
   background: linear-gradient(135deg, #1e3a8a, #4169E1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #fff;
 }
 
@@ -363,56 +366,6 @@ button.loading::before {
     margin: 0; /* remove margem vertical antiga */
   }
 }
-/* ===== DESKTOP: MURAL EM TELA LARGA ===== */
-@media (min-width: 900px) {
-
-  body {
-    padding: 40px 0;
-  }
-
-  .portal {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  #mural-escola {
-    max-width: 100%;
-  }
-
-  #lista-avisos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-  }
-
-  #lista-avisos .box {
-    margin: 0;
-  }
-}
-/* ===== CENTRALIZAR TELA INICIAL ===== */
-body {
-  display: flex;
-  justify-content: center;
-}
-
-/* portal padrão (login + responsáveis) */
-.portal {
-  margin: 0 auto;
-}
-
-/* ===== QUANDO ABRIR O MURAL ===== */
-@media (min-width: 900px) {
-
-  body.mural-aberto {
-    justify-content: flex-start;
-  }
-
-  body.mural-aberto .portal {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-}
 
 
 </style>
@@ -581,8 +534,6 @@ function entrar() {
 }
 
 function abrirMuralGeral() {
-  document.body.classList.add("mural-aberto");
-
   document.getElementById("painel-escola").style.display = "none";
   document.getElementById("mural-escola").style.display = "block";
 
@@ -591,6 +542,7 @@ function abrirMuralGeral() {
     muralCarregado = true;
   }
 }
+
 function criarAviso() {
   const titulo = document.getElementById("tituloAviso").value.trim();
   const mensagem = document.getElementById("mensagemAviso").value.trim();
@@ -711,12 +663,10 @@ fetch(URL_API + "?tipo=turmas")
     alert("Erro ao carregar as turmas. Tente novamente.");
   });
 function voltarPainel() {
-  document.body.classList.remove("mural-aberto");
-
   document.getElementById("mural-escola").style.display = "none";
   document.getElementById("painel-escola").style.display = "block";
+  
 }
-
 
 function carregarMuralGeral() {
   const lista = document.getElementById("lista-avisos");
