@@ -380,6 +380,61 @@ button.loading::before {
     margin: 0;
   }
 }
+/* ===============================
+   ESTILO SISTEMA EDUCACIONAL (DESKTOP)
+   =============================== */
+@media (min-width: 1000px) {
+
+  body {
+    align-items: flex-start;
+    padding: 40px 0;
+  }
+
+  /* portal geral */
+  .portal {
+    max-width: 1200px;
+  }
+
+  /* painel da escola em grade */
+  #painel-escola {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* título ocupa tudo */
+  #painel-escola h3 {
+    grid-column: 1 / -1;
+  }
+
+  /* botões de topo alinhados */
+  #painel-escola > button,
+  #painel-escola > hr {
+    grid-column: 1 / -1;
+  }
+
+  /* mural ocupa tudo */
+  #mural-escola {
+    max-width: 100%;
+  }
+
+  /* avisos em cards */
+  #lista-avisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 22px;
+  }
+
+  #lista-avisos .box {
+    margin: 0;
+  }
+
+  /* área responsáveis mais elegante */
+  .box h3 {
+    font-size: 19px;
+  }
+}
 
 
 </style>
