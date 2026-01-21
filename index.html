@@ -283,11 +283,45 @@ button.pulse {
   <p style="opacity:0.9;">Portal de Avisos</p>
 
   <!-- ÁREA DA ESCOLA -->
-  <div class="box">
-    <h3>🔒 Área da Escola</h3>
-    <input type="password" id="senha" placeholder="Digite a senha">
-    <button onclick="entrar()">Entrar no Mural Geral</button>
-  </div>
+  <!-- ÁREA DA ESCOLA -->
+<div class="box" id="login-escola">
+  <h3>🔒 Área da Escola</h3>
+    
+  <input type="password" id="senha" placeholder="Digite a senha">
+  <button onclick="entrar()">Entrar</button>
+</div>
+
+<!-- PAINEL DA ESCOLA (PROTEGIDO) -->
+<div class="box" id="painel-escola" style="display:none;">
+  <h3>🏫 Área da Escola</h3>
+<button class="secundario" onclick="sair()">🚪 Sair da Área da Escola</button>
+<hr style="margin:16px 0;">
+
+  <h3>📢 Criar Aviso</h3>
+
+  <input id="tituloAviso" placeholder="Título do aviso">
+
+  <textarea id="mensagemAviso" rows="4"
+    placeholder="Mensagem do aviso"></textarea>
+
+  <select id="tipoAviso">
+    <option value="aviso">📢 Aviso</option>
+    <option value="reuniao">📅 Reunião</option>
+    <option value="urgente">⚠️ Urgente</option>
+  </select>
+
+  <select id="turmaAviso">
+    <option value="GERAL">🌐 Geral</option>
+  </select>
+
+  <select id="fixadoAviso">
+    <option value="NAO">📌 Não fixar</option>
+    <option value="SIM">📌 Fixar no topo</option>
+  </select>
+
+  <button onclick="criarAviso()">Salvar Aviso</button>
+</div>
+
 
   <p style="color:#fff; font-size:14px; max-width:360px;">
   Acompanhe os avisos da turma do seu filho de forma simples e rápida.
@@ -337,10 +371,44 @@ const URL_API = "https://script.google.com/macros/s/AKfycbx5Ai2XBS9IPsGs1OcHjg0N
 // 🔒 Área da escola
 function entrar() {
   if (document.getElementById("senha").value === "ESCOLA123") {
-    window.location.href = "mural.html";
+      localStorage.setItem("auth_escola", "ok");
+    document.getElementById("login-escola").style.display = "none";
+    document.getElementById("painel-escola").style.display = "block";
   } else {
     alert("Senha incorreta");
   }
+}
+function abrirMuralGeral() {
+  window.location.href = "mural.html";
+}
+
+function criarAviso() {
+  const titulo = document.getElementById("tituloAviso").value.trim();
+  const mensagem = document.getElementById("mensagemAviso").value.trim();
+  const categoria = document.getElementById("tipoAviso").value;
+  const turma = document.getElementById("turmaAviso").value;
+  const fixado = document.getElementById("fixadoAviso").value;
+
+  if (!titulo || !mensagem) {
+    alert("Preencha título e mensagem.");
+    return;
+  }
+
+  fetch(
+    URL_API +
+    "?tipo=criar_aviso" +
+    "&titulo=" + encodeURIComponent(titulo) +
+    "&mensagem=" + encodeURIComponent(mensagem) +
+    "&categoria=" + categoria +
+    "&turma=" + turma +
+    "&fixado=" + fixado
+  )
+  .then(() => {
+    alert("Aviso criado com sucesso!");
+    document.getElementById("tituloAviso").value = "";
+    document.getElementById("mensagemAviso").value = "";
+  })
+  .catch(() => alert("Erro ao criar aviso"));
 }
 
 // 🔹 Carregar turmas da planilha
@@ -381,6 +449,15 @@ function abrirTurma() {
   window.location.href =
     "mural.html?turma=" + encodeURIComponent(turma);
 }
+    if (localStorage.getItem("auth_escola") === "ok") {
+  document.getElementById("login-escola").style.display = "none";
+  document.getElementById("painel-escola").style.display = "block";
+}
+function sair() {
+  localStorage.removeItem("auth_escola");
+  location.reload();
+}
+
 </script>
 
 
