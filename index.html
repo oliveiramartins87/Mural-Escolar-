@@ -435,6 +435,76 @@ button.loading::before {
     font-size: 19px;
   }
 }
+/* ===============================
+   MENU LATERAL – SISTEMA EDUCACIONAL
+   =============================== */
+.layout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.menu-lateral {
+  display: none;
+}
+
+/* DESKTOP */
+@media (min-width: 1000px) {
+
+  body {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .layout {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .menu-lateral {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    background: #0f172a;
+    color: #fff;
+    padding: 24px;
+    border-radius: 18px;
+    margin-right: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  }
+
+  .menu-lateral h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .menu-lateral button {
+    background: none;
+    border: none;
+    color: #fff;
+    text-align: left;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  .menu-lateral button:hover {
+    background: rgba(255,255,255,0.12);
+  }
+
+  .menu-lateral .sair {
+    margin-top: auto;
+    background: rgba(220,38,38,0.15);
+    color: #fecaca;
+  }
+
+  .portal {
+    max-width: 1000px;
+    text-align: left;
+  }
+}
 
 
 </style>
@@ -442,8 +512,17 @@ button.loading::before {
 </head>
 
 <body>
+<!-- MENU LATERAL (DESKTOP) -->
+<div class="menu-lateral">
+  <h2>🏫 IE Sarah</h2>
 
-<div class="portal">
+  <button onclick="mostrarPainel()">📢 Criar Aviso</button>
+  <button onclick="mostrarMural()">📋 Mural Geral</button>
+  <button onclick="sair()" class="sair">🚪 Sair</button>
+</div>
+
+<div class="layout">
+  <div class="portal">
 
   <img src="logo.png" alt="Logo da escola" style="height:200px;">
   <h1 style="margin-bottom:4px;">IE Sarah Kubitschek</h1>
@@ -771,10 +850,28 @@ function carregarMuralGeral() {
       lista.innerHTML = "<p>❌ Erro ao carregar avisos.</p>";
     });
 }
+<script>
+function mostrarPainel() {
+  document.getElementById("mural-escola").style.display = "none";
+  document.getElementById("painel-escola").style.display = "block";
+}
+
+function mostrarMural() {
+  document.getElementById("painel-escola").style.display = "none";
+  document.getElementById("mural-escola").style.display = "block";
+
+  if (!muralCarregado) {
+    carregarMuralGeral();
+    muralCarregado = true;
+  }
+}
+</script>
 
 </script>
 
 
+  </div>
+</div>
 
 </body>
 </html>
