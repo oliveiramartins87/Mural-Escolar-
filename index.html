@@ -354,6 +354,18 @@ button.loading::before {
     margin: 0;
   }
 }
+/* ===== MURAL EM GRID NO DESKTOP ===== */
+@media (min-width: 900px) {
+  #lista-avisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  #lista-avisos .box {
+    margin: 0; /* remove margem vertical antiga */
+  }
+}
 
 
 </style>
