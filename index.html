@@ -413,7 +413,7 @@ button.pulse {
 </div>
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbzGvwJvZN6Fq_EDWHEWIesLa1hLFFmOyFofp01bKp0xRuVtgF5UDWtr2Vwyfe12gNkU1w/exec";
-
+let muralCarregado = false;
 // 🔒 Área da escola
 function entrar() {
   if (document.getElementById("senha").value === "ESCOLA123") {
@@ -425,7 +425,6 @@ function entrar() {
     alert("Senha incorreta");
   }
 }
-let muralCarregado = false;
 
 function abrirMuralGeral() {
   document.getElementById("painel-escola").style.display = "none";
@@ -559,30 +558,41 @@ fetch(URL_API + "?tipo=turmas")
 function voltarPainel() {
   document.getElementById("mural-escola").style.display = "none";
   document.getElementById("painel-escola").style.display = "block";
-  muralCarregado = false;
+  
 }
 
 function carregarMuralGeral() {
+  const lista = document.getElementById("lista-avisos");
+  lista.innerHTML = "<p>⏳ Carregando avisos...</p>";
+
   fetch(URL_API)
     .then(r => r.json())
     .then(avisos => {
-      const lista = document.getElementById("lista-avisos");
       lista.innerHTML = "";
 
       avisos.forEach(a => {
         const card = document.createElement("div");
         card.className = "box";
+
+        const titulo = a.Titulo
+          ? `<strong>${a.Titulo}</strong><br>`
+          : "";
+
         card.innerHTML = `
-          <strong>${a.Titulo}</strong><br>
-          <small><b>Turma:</b> ${a.Turma}</small>
-          <p>${a.Mensagem}</p>
+          ${titulo}
+          <small><b>Turma:</b> ${a.Turma || "GERAL"}</small>
+          <p>${a.Mensagem || ""}</p>
         `;
+
         lista.appendChild(card);
       });
+
+      if (avisos.length === 0) {
+        lista.innerHTML = "<p>Nenhum aviso publicado.</p>";
+      }
     })
     .catch(() => {
-      document.getElementById("lista-avisos").innerHTML =
-        "<p>Erro ao carregar avisos.</p>";
+      lista.innerHTML = "<p>❌ Erro ao carregar avisos.</p>";
     });
 }
 
