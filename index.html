@@ -525,9 +525,14 @@ function entrar() {
   .then(r => r.json())
   .then(resp => {
     if (resp.status === "OK") {
-      localStorage.setItem("auth_escola", "ok");
-      document.getElementById("login-escola").style.display = "none";
-      document.getElementById("painel-escola").style.display = "block";
+  localStorage.setItem("auth_escola", "ok");
+  document.getElementById("login-escola").style.display = "none";
+  document.getElementById("painel-escola").style.display = "block";
+
+  // 🔴 ESCONDE A ÁREA DOS RESPONSÁVEIS
+  document.getElementById("area-responsaveis").style.display = "none";
+}
+
     } else {
       alert("Senha incorreta");
       resetBotao();
