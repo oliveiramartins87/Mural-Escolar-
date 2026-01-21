@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
@@ -297,87 +297,23 @@ button.loading {
   position: relative;
 }
 
-button.loading {
-  pointer-events: none;
-  opacity: 0.85;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-button.loading::before {
+button.loading::after {
   content: "";
   width: 18px;
   height: 18px;
-  min-width: 18px;
-  min-height: 18px;
-
   border: 3px solid rgba(255,255,255,0.4);
   border-top-color: #fff;
   border-radius: 50%;
-
-  display: inline-block;
-  box-sizing: border-box;
-
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg) translate(-50%, -50%); }
 }
-/* ===============================
-   DESKTOP: MURAL MAIS LARGO
-   =============================== */
-@media (min-width: 900px) {
-
-  /* quando estiver no mural da escola */
-  #mural-escola {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  /* lista de avisos em grade */
-  #lista-avisos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-  }
-
-  /* cards ficam mais confortáveis */
-  #lista-avisos .box {
-    margin: 0;
-  }
-}
-/* ===== MURAL EM GRID NO DESKTOP ===== */
-@media (min-width: 900px) {
-  #lista-avisos {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-  }
-
-  #lista-avisos .box {
-    margin: 0; /* remove margem vertical antiga */
-  }
-}
-/* ===== AJUSTE QUANDO MURAL ESTIVER ABERTO ===== */
-body.mural-aberto {
-  align-items: flex-start; /* tira centralização vertical */
-}
-
-@media (min-width: 900px) {
-  body.mural-aberto .portal {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-}
-
 
 </style>
 
@@ -397,7 +333,7 @@ body.mural-aberto {
   <h3>🔒 Área da Escola</h3>
     
   <input type="password" id="senha" placeholder="Digite a senha">
-<button id="btn-entrar" onclick="entrar()">Entrar</button>
+  <button onclick="entrar()">Entrar</button>
 </div>
 
 <!-- PAINEL DA ESCOLA (PROTEGIDO) -->
@@ -457,7 +393,7 @@ body.mural-aberto {
   <div id="lista-avisos"></div>
 </div>
 
-<div id="area-responsaveis">
+
   <p style="color:#fff; font-size:14px; max-width:360px;">
   Acompanhe os avisos da turma do seu filho de forma simples e rápida.
 </p>
@@ -477,7 +413,7 @@ body.mural-aberto {
   Acessar Mural da Turma
 </button>
 </div>
-</div>
+
 <div class="aviso-notificacoes">
   <p class="titulo">🔔 Receba avisos da escola</p>
 
@@ -506,16 +442,11 @@ let muralCarregado = false;
 // 🔒 Área da escola
 function entrar() {
   const senha = document.getElementById("senha").value;
-  const botao = document.getElementById("btn-entrar");
 
   if (!senha) {
     alert("Digite a senha.");
     return;
   }
-
-  // ativa loading
-  botao.classList.add("loading");
-  botao.textContent = "Verificando acesso";
 
   fetch(
     URL_API +
@@ -525,45 +456,28 @@ function entrar() {
   .then(r => r.json())
   .then(resp => {
     if (resp.status === "OK") {
-  localStorage.setItem("auth_escola", "ok");
-  document.getElementById("login-escola").style.display = "none";
-  document.getElementById("painel-escola").style.display = "block";
-
-  // 🔴 ESCONDE A ÁREA DOS RESPONSÁVEIS
-  document.getElementById("area-responsaveis").style.display = "none";
-}
-
+      localStorage.setItem("auth_escola", "ok");
+      document.getElementById("login-escola").style.display = "none";
+      document.getElementById("painel-escola").style.display = "block";
     } else {
       alert("Senha incorreta");
-      resetBotao();
     }
   })
   .catch(() => {
     alert("Erro ao validar senha. Tente novamente.");
-    resetBotao();
   });
-
-  function resetBotao() {
-    botao.classList.remove("loading");
-    botao.textContent = "Entrar";
-  }
 }
 
-function abrirMuralGeral() {
-  document.body.classList.add("mural-aberto");
 
+function abrirMuralGeral() {
   document.getElementById("painel-escola").style.display = "none";
   document.getElementById("mural-escola").style.display = "block";
-
-  // 🔴 ESCONDE ÁREA DOS RESPONSÁVEIS
-  document.getElementById("area-responsaveis").style.display = "none";
 
   if (!muralCarregado) {
     carregarMuralGeral();
     muralCarregado = true;
   }
 }
-
 
 function criarAviso() {
   const titulo = document.getElementById("tituloAviso").value.trim();
@@ -685,13 +599,9 @@ fetch(URL_API + "?tipo=turmas")
     alert("Erro ao carregar as turmas. Tente novamente.");
   });
 function voltarPainel() {
-  document.body.classList.remove("mural-aberto");
-
   document.getElementById("mural-escola").style.display = "none";
   document.getElementById("painel-escola").style.display = "block";
-
-  // 🔵 MOSTRA DE NOVO
-  document.getElementById("area-responsaveis").style.display = "block";
+  
 }
 
 function carregarMuralGeral() {
@@ -732,5 +642,6 @@ function carregarMuralGeral() {
 </script>
 
 
+
 </body>
-</html>    
+</html> 
