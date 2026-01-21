@@ -300,7 +300,7 @@ button.loading {
 button.loading {
   pointer-events: none;
   opacity: 0.85;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -310,16 +310,28 @@ button.loading::before {
   content: "";
   width: 18px;
   height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+
   border: 3px solid rgba(255,255,255,0.4);
   border-top-color: #fff;
   border-radius: 50%;
+
+  display: inline-block;
+  box-sizing: border-box;
+
   animation: spin 0.8s linear infinite;
 }
 
-
 @keyframes spin {
-  to { transform: rotate(360deg) translate(-50%, -50%); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
+
 
 </style>
 
