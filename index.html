@@ -348,6 +348,30 @@ body.area-escola .somente-tela-inicial {
     transition: transform 0.2s ease;
   }
 }
+/* ===============================
+   DESKTOP – LIBERAR LARGURA DO MURAL
+   =============================== */
+@media (min-width: 900px) {
+
+  /* quando estiver no mural */
+  .portal:has(#mural-escola[style*="block"]) {
+    max-width: 1200px;
+  }
+
+  #mural-escola {
+    max-width: 100%;
+  }
+
+  #lista-avisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  #lista-avisos .box {
+    margin: 0;
+  }
+}
 
 
 </style>
