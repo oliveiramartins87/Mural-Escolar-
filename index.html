@@ -319,6 +319,35 @@ button.loading::after {
 body.area-escola .somente-tela-inicial {
   display: none !important;
 }
+/* ===============================
+   MURAL GERAL – LAYOUT DESKTOP
+   =============================== */
+@media (min-width: 900px) {
+
+  /* aumenta largura só no mural */
+  #mural-escola {
+    max-width: 1000px;
+  }
+
+  /* grid dos avisos */
+  #lista-avisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  /* remove animação exagerada em grid */
+  #lista-avisos .box {
+    margin: 0;
+  }
+}
+@media (min-width: 900px) {
+  #lista-avisos .box:hover {
+    transform: translateY(-4px);
+    transition: transform 0.2s ease;
+  }
+}
 
 
 </style>
