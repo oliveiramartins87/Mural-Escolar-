@@ -316,6 +316,9 @@ button.loading::after {
     transform: translate(-50%, -50%) rotate(360deg);
   }
 }
+body.area-escola .somente-tela-inicial {
+  display: none !important;
+}
 
 
 </style>
@@ -397,7 +400,7 @@ button.loading::after {
   <div id="lista-avisos"></div>
 </div>
 
-
+<div class="somente-tela-inicial">
   <p style="color:#fff; font-size:14px; max-width:360px;">
   Acompanhe os avisos da turma do seu filho de forma simples e rápida.
 </p>
@@ -439,6 +442,7 @@ button.loading::after {
     21 99693-1398
   </a>
 </p>
+</div> 
 </div>
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbxmhMemcvvYttb2FD9Qo_smFJo3e6JgmSQs4kdyPbVyLZZEJkW6e9V7wUs_MmFDPp5mQA/exec";
@@ -465,9 +469,11 @@ function entrar() {
   .then(r => r.json())
   .then(resp => {
     if (resp.status === "OK") {
-      localStorage.setItem("auth_escola", "ok");
-      document.getElementById("login-escola").style.display = "none";
-      document.getElementById("painel-escola").style.display = "block";
+     localStorage.setItem("auth_escola", "ok"); // 🔴 ESSENCIAL
+      document.body.classList.add("area-escola");
+document.getElementById("login-escola").style.display = "none";
+document.getElementById("painel-escola").style.display = "block";
+
     } else {
       alert("Senha incorreta");
       resetBotao();
@@ -572,6 +578,7 @@ function abrirTurma() {
     "mural.html?turma=" + encodeURIComponent(turma);
 }
     if (localStorage.getItem("auth_escola") === "ok") {
+  document.body.classList.add("area-escola"); // 🔴 FALTAVA ISSO
   document.getElementById("login-escola").style.display = "none";
   document.getElementById("painel-escola").style.display = "block";
 }
