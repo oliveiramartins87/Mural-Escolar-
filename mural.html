@@ -431,6 +431,15 @@ function icone(tipo) {
   if (tipo === "urgente") return "⚠️";
   return "";
 }
+function linkify(texto) {
+  if (!texto) return "";
+
+  const regex = /(https?:\/\/[^\s]+)/g;
+  return texto.replace(
+    regex,
+    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+}
 
 function renderizar() {
   const div = document.getElementById("avisos");
@@ -489,7 +498,7 @@ function renderizar() {
 
     box.innerHTML = `
   <h3>${icone(a.Tipo)} ${a.Título}</h3>
-  <p>${a.Mensagem}</p>
+  <p>${linkify(a.Mensagem)}</p>
   <small>
     📅 ${new Date(a.Data).toLocaleDateString("pt-BR")}
     • 🏫 ${a.Turma}
