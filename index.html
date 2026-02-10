@@ -566,6 +566,15 @@ document.getElementById("painel-escola").style.display = "block";
     botao.textContent = "Entrar";
   }
 }
+function linkify(texto) {
+  if (!texto) return "";
+
+  const regex = /(https?:\/\/[^\s]+)/g;
+  return texto.replace(
+    regex,
+    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+}
 
 function abrirMuralGeral() {
   document.getElementById("painel-escola").style.display = "none";
@@ -723,9 +732,8 @@ function carregarMuralGeral() {
         card.innerHTML = `
           ${titulo}
           <small><b>Turma:</b> ${a.Turma || "GERAL"}</small>
-          <p>${a.Mensagem || ""}</p>
+          <p>${linkify(a.Mensagem)}</p>
         `;
-
         lista.appendChild(card);
       });
 
