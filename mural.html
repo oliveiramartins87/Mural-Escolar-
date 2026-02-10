@@ -229,7 +229,11 @@ header {
   50% { opacity: 1; }
   100% { opacity: 0.4; }
 }
-
+.aviso p,
+.aviso a {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
 
 </style>
 </head>
@@ -437,7 +441,7 @@ function linkify(texto) {
   const regex = /(https?:\/\/[^\s]+)/g;
   return texto.replace(
     regex,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    '<a href="$1" target="_blank" rel="noopener noreferrer">📄 Clique aqui para abrir</a>'
   );
 }
 
