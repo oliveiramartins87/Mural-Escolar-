@@ -570,12 +570,27 @@ function linkify(texto) {
   if (!texto) return "";
 
   const regex = /(https?:\/\/[^\s]+)/g;
-  return texto.replace(
-    regex,
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-  );
-}
 
+  return texto.replace(regex, (url) => {
+    let label = "📄 Abrir documento";
+
+    // heurística simples (opcional)
+    if (url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+      label = "🖼️ Ver imagem";
+    } else if (url.includes("drive.google") || url.includes("driveusercontent")) {
+      label = "📄 Abrir documento no Drive";
+    }
+
+    return `
+      <a href="${url}"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="link-documento">
+        ${label}
+      </a>
+    `;
+  });
+}
 function abrirMuralGeral() {
   document.getElementById("painel-escola").style.display = "none";
   document.getElementById("mural-escola").style.display = "block";
