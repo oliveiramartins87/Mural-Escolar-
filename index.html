@@ -520,6 +520,14 @@ body.area-escola .somente-tela-inicial {
 </div>
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbxmhMemcvvYttb2FD9Qo_smFJo3e6JgmSQs4kdyPbVyLZZEJkW6e9V7wUs_MmFDPp5mQA/exec";
+ // 🔥 acorda o Apps Script (evita lentidão no celular)
+setTimeout(() => {
+  fetch(URL_API + "?tipo=turmas").catch(() => {});
+}, 500);
+ // 🔥 garante carregamento no celular
+document.addEventListener("DOMContentLoaded", () => {
+  carregarTurmasSafe();
+});
 let muralCarregado = false;
 // 🔒 Área da escola
 function entrar() {
@@ -699,7 +707,7 @@ async function carregarTurmas() {
   }
 
   // mostra carregando só se não tiver cache
-  <selectResp.innerHTML = '<option disabled selected>⏳ Carregando turmas...</option>';
+  selectResp.innerHTML = '<option disabled selected>⏳ Carregando turmas...</option>';
 
   try {
     const r = await fetch(URL_API + "?tipo=turmas");
@@ -784,17 +792,34 @@ let turmasCarregadas = false;
 
 async function carregarTurmasSafe() {
   if (turmasCarregadas) return;
+
   turmasCarregadas = true;
 
   await carregarTurmas();
+
+  // 🔥 se não carregou (falha mobile), tenta de novo
+  const select = document.getElementById("turma");
+
+  if (select.options.length <= 1) {
+    turmasCarregadas = false;
+
+    setTimeout(() => {
+      carregarTurmasSafe();
+    }, 1000);
+  }
 }
 
 // pré-carrega
-setTimeout(carregarTurmasSafe, 500);
+window.addEventListener("load", () => {
+  carregarTurmasSafe();
 
-// se clicar antes
-document.getElementById("turma")
-  .addEventListener("click", carregarTurmasSafe, { once: true });
+  const selectTurma = document.getElementById("turma");
+
+  if (selectTurma) {
+    selectTurma.addEventListener("focus", carregarTurmasSafe, { once: true });
+    selectTurma.addEventListener("click", carregarTurmasSafe, { once: true });
+  }
+});
 </script>
 
 
