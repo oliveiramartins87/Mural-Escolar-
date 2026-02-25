@@ -524,11 +524,13 @@ const URL_API = "https://script.google.com/macros/s/AKfycbxmhMemcvvYttb2FD9Qo_sm
 const cache = localStorage.getItem("turmas_cache");
 
 if (cache) {
-  try {
-    montarSelects(JSON.parse(cache));
-  } catch {
-    localStorage.removeItem("turmas_cache");
-  }
+  setTimeout(() => {
+    try {
+      montarSelects(JSON.parse(cache));
+    } catch {
+      localStorage.removeItem("turmas_cache");
+    }
+  }, 0);
 }
  // 🔥 acorda API
 setTimeout(() => {
