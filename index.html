@@ -520,14 +520,21 @@ body.area-escola .somente-tela-inicial {
 </div>
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbxmhMemcvvYttb2FD9Qo_smFJo3e6JgmSQs4kdyPbVyLZZEJkW6e9V7wUs_MmFDPp5mQA/exec";
- // 🔥 acorda o Apps Script (evita lentidão no celular)
+ // ⚡ mostra cache instantâneo
+const cache = localStorage.getItem("turmas_cache");
+
+if (cache) {
+  try {
+    montarSelects(JSON.parse(cache));
+  } catch {
+    localStorage.removeItem("turmas_cache");
+  }
+}
+ // 🔥 acorda API
 setTimeout(() => {
-  fetch(URL_API + "?tipo=turmas").catch(() => {});
-}, 500);
- // 🔥 garante carregamento no celular
-document.addEventListener("DOMContentLoaded", () => {
-  carregarTurmasSafe();
-});
+  fetch(URL_API + "?tipo=turmas&t=" + Date.now()).catch(() => {});
+}, 200);
+
 let muralCarregado = false;
 // 🔒 Área da escola
 function entrar() {
@@ -697,20 +704,20 @@ async function carregarTurmas() {
   const selectResp = document.getElementById("turma");
   const selectAviso = document.getElementById("turmaAviso");
 
-  // 🔴 tenta cache primeiro (SEM ESPERAR API)
   const cache = localStorage.getItem("turmas_cache");
-  const cacheTime = localStorage.getItem("turmas_cache_time");
 
-  if (cache && cacheTime && (Date.now() - cacheTime < 3600000)) {
+  // 🔥 MOSTRA IMEDIATO
+  if (cache) {
     montarSelects(JSON.parse(cache));
-    return; // 🔥 NÃO FAZ FETCH
+  } else {
+    selectResp.innerHTML = '<option>⏳ Carregando...</option>';
   }
 
-  // mostra carregando só se não tiver cache
-  selectResp.innerHTML = '<option disabled selected>⏳ Carregando turmas...</option>';
-
+  // 🔥 ATUALIZA EM BACKGROUND
   try {
-    const r = await fetch(URL_API + "?tipo=turmas");
+    const r = await fetch(URL_API + "?tipo=turmas&t=" + Date.now(), {
+  cache: "no-store"
+});
     const turmas = await r.json();
 
     localStorage.setItem("turmas_cache", JSON.stringify(turmas));
@@ -719,7 +726,9 @@ async function carregarTurmas() {
     montarSelects(turmas);
 
   } catch {
-    selectResp.innerHTML = '<option>Erro ao carregar</option>';
+    if (!cache) {
+      selectResp.innerHTML = '<option>Erro ao carregar</option>';
+    }
   }
 }
 
@@ -785,32 +794,9 @@ function carregarMuralGeral() {
       lista.innerHTML = "<p>❌ Erro ao carregar avisos.</p>";
     });
 }
-// 🚀 CARREGAR TURMAS SEM TRAVAR
-
-// pré-carrega em segundo plano (1 segundo depois)
-let turmasCarregadas = false;
-
-async function carregarTurmasSafe() {
-  if (turmasCarregadas) return;
-
-  turmasCarregadas = true;
-
-  await carregarTurmas();
-
-  // 🔥 se não carregou (falha mobile), tenta de novo
-  const select = document.getElementById("turma");
-
-  if (select.options.length <= 1) {
-    turmasCarregadas = false;
-
-    setTimeout(() => {
-      carregarTurmasSafe();
-    }, 1000);
-  }
-}
 
 // pré-carrega
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
   carregarTurmasSafe();
 
   const selectTurma = document.getElementById("turma");
@@ -820,6 +806,27 @@ window.addEventListener("load", () => {
     selectTurma.addEventListener("click", carregarTurmasSafe, { once: true });
   }
 });
+let turmasCarregadas = false;
+let tentativas = 0;
+
+async function carregarTurmasSafe() {
+  if (turmasCarregadas) return;
+
+  turmasCarregadas = true;
+
+  await carregarTurmas();
+
+  const select = document.getElementById("turma");
+
+  if (select.options.length <= 1 && tentativas < 3) {
+    turmasCarregadas = false;
+    tentativas++;
+
+    setTimeout(() => {
+      carregarTurmasSafe();
+    }, 800);
+  }
+}
 </script>
 
 
