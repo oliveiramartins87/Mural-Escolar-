@@ -699,7 +699,7 @@ async function carregarTurmas() {
   }
 
   // mostra carregando só se não tiver cache
-  selectResp.innerHTML = '<option>⏳ Carregando...</option>';
+  <selectResp.innerHTML = '<option disabled selected>⏳ Carregando turmas...</option>';
 
   try {
     const r = await fetch(URL_API + "?tipo=turmas");
