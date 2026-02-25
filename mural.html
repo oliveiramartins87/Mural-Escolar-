@@ -280,7 +280,10 @@ header {
 <div id="avisos" style="display:none;"></div>
 <script>
 const URL_API = "https://script.google.com/macros/s/AKfycbxmhMemcvvYttb2FD9Qo_smFJo3e6JgmSQs4kdyPbVyLZZEJkW6e9V7wUs_MmFDPp5mQA/exec";
-
+// 🔥 acorda Apps Script
+setTimeout(() => {
+  fetch(URL_API + "?t=" + Date.now()).catch(() => {});
+}, 200);
 const params = new URLSearchParams(window.location.search);
 const turmaSelecionadaRaw = params.get("turma");
 const turmaSelecionada = turmaSelecionadaRaw
@@ -305,21 +308,24 @@ let filtroTipo = "todos";
 let ultimaAssinaturaAvisos = null;
 const cacheKey = "avisos_cache_" + (turmaSelecionada || "GERAL");
 const cacheTimeKey = cacheKey + "_time";
-const CACHE_VALIDADE = 13000; // ⏱️ 30 segundos
+const CACHE_VALIDADE = 8000; // ⏱️ 30 segundos
 
 const cache = localStorage.getItem(cacheKey);
 const cacheTime = localStorage.getItem(cacheTimeKey);
 const agora = Date.now();
 
-if (cache && cacheTime && (agora - Number(cacheTime) < CACHE_VALIDADE)) {
-  avisos = JSON.parse(cache);
+if (cache) {
+  try {
+    avisos = JSON.parse(cache);
 
-  document.getElementById("loading").style.display = "none";
-  document.getElementById("avisos").style.display = "block";
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("avisos").style.display = "block";
 
-  renderizar(); // ⚡ aparece instantâneo
+    renderizar(); // ⚡ mostra instantâneo
+  } catch {
+    localStorage.removeItem(cacheKey);
+  }
 }
-
 function filtrar(tipo) {
   filtroTipo = tipo;
   renderizar();
@@ -359,9 +365,13 @@ function mostrarErroTurma() {
 
 // 1️⃣ Buscar lista oficial de turmas
 // 🚀 BUSCA EM PARALELO (turmas + avisos)
-const reqTurmas = fetch(URL_API + "?tipo=turmas").then(r => r.json());
-const reqAvisos = fetch(URL_API).then(r => r.json());
+const reqTurmas = fetch(URL_API + "?tipo=turmas&t=" + Date.now(), {
+  cache: "no-store"
+}).then(r => r.json());
 
+const reqAvisos = fetch(URL_API + "?t=" + Date.now(), {
+  cache: "no-store"
+}).then(r => r.json());
 Promise.all([reqTurmas, reqAvisos])
   .then(([turmas, dados]) => {
 
@@ -387,7 +397,7 @@ Promise.all([reqTurmas, reqAvisos])
 
 
     // 👁️ exibe avisos
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       document.getElementById("loading").style.display = "none";
       document.getElementById("avisos").style.display = "block";
       renderizar();
@@ -403,32 +413,32 @@ Promise.all([reqTurmas, reqAvisos])
 
 // 🔄 Busca avisos e atualiza automaticamente se houver mudança
 function carregarAvisosAutomatico() {
-  fetch(URL_API)
+  fetch(URL_API + "?t=" + Date.now(), {
+    cache: "no-store"
+  })
     .then(r => r.json())
     .then(dados => {
 
-      // cria uma assinatura simples do conteúdo
       const assinatura = dados.length
-  ? dados[0].Data + "-" + dados.length
-  : "";
+        ? dados[0].Data + "-" + dados.length
+        : "";
 
-      // se não mudou, não faz nada
+      // se não mudou, não atualiza
       if (assinatura === ultimaAssinaturaAvisos) return;
 
-      // se mudou, atualiza tudo
+      // atualiza dados
       ultimaAssinaturaAvisos = assinatura;
       avisos = dados;
 
-      // atualiza cache COM TEMPO
-localStorage.setItem(cacheKey, JSON.stringify(dados));
-localStorage.setItem(cacheTimeKey, Date.now());
+      // atualiza cache
+      localStorage.setItem(cacheKey, JSON.stringify(dados));
+      localStorage.setItem(cacheTimeKey, Date.now());
 
-      // renderiza sem reload
+      // renderiza
       renderizar();
     })
     .catch(err => console.error("Erro na atualização automática:", err));
 }
-
 function icone(tipo) {
   if (tipo === "aviso") return "📢";
   if (tipo === "reuniao") return "📅";
