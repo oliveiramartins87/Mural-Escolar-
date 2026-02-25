@@ -488,9 +488,6 @@ body.area-escola .somente-tela-inicial {
 <div class="select-wrapper">
   <select id="turma">
     <option value="">Selecione a turma</option>
-    <option value="IFLGCH1001">IFLGCH1001</option>
-    <option value="IFLGCH1002">IFLGCH1002</option>
-    <!-- demais turmas -->
   </select>
 </div>
 <button class="pulse" onclick="abrirTurma()">
@@ -687,40 +684,60 @@ function sair() {
   localStorage.removeItem("auth_escola");
   location.reload();
 }
-// 🔹 Carregar turmas da planilha
-fetch(URL_API + "?tipo=turmas")
-  .then(r => r.json())
-  .then(turmas => {
+// 🔹 CARREGAR TURMAS (OTIMIZADO)
+async function carregarTurmas() {
+  const selectResp = document.getElementById("turma");
+  const selectAviso = document.getElementById("turmaAviso");
 
-    // SELECT DOS RESPONSÁVEIS
-    const selectResp = document.getElementById("turma");
-    selectResp.innerHTML = '<option value="">Selecione a turma</option>';
+  // 🔴 tenta cache primeiro (SEM ESPERAR API)
+  const cache = localStorage.getItem("turmas_cache");
+  const cacheTime = localStorage.getItem("turmas_cache_time");
 
-    // SELECT DA ESCOLA (CRIAR AVISO)
-    const selectAviso = document.getElementById("turmaAviso");
-    selectAviso.innerHTML = '<option value="GERAL">🌐 Geral</option>';
+  if (cache && cacheTime && (Date.now() - cacheTime < 3600000)) {
+    montarSelects(JSON.parse(cache));
+    return; // 🔥 NÃO FAZ FETCH
+  }
 
-    turmas.forEach(turma => {
-      // responsáveis
-      const opt1 = document.createElement("option");
-      opt1.value = turma;
-      opt1.textContent = turma;
-      selectResp.appendChild(opt1);
+  // mostra carregando só se não tiver cache
+  selectResp.innerHTML = '<option>⏳ Carregando...</option>';
 
-      // escola
-      const opt2 = document.createElement("option");
-      opt2.value = turma;
-      opt2.textContent = turma;
-      selectAviso.appendChild(opt2);
-    });
+  try {
+    const r = await fetch(URL_API + "?tipo=turmas");
+    const turmas = await r.json();
 
-    // última turma usada (responsáveis)
-    const ultima = localStorage.getItem("ultimaTurma");
-    if (ultima) selectResp.value = ultima;
-  })
-  .catch(() => {
-    alert("Erro ao carregar as turmas. Tente novamente.");
+    localStorage.setItem("turmas_cache", JSON.stringify(turmas));
+    localStorage.setItem("turmas_cache_time", Date.now());
+
+    montarSelects(turmas);
+
+  } catch {
+    selectResp.innerHTML = '<option>Erro ao carregar</option>';
+  }
+}
+
+// 🔹 MONTAR SELECTS RÁPIDO
+function montarSelects(turmas) {
+  const selectResp = document.getElementById("turma");
+  const selectAviso = document.getElementById("turmaAviso");
+
+  selectResp.innerHTML = '<option value="">Selecione a turma</option>';
+  selectAviso.innerHTML = '<option value="GERAL">🌐 Geral</option>';
+
+  // 🔥 performance alta
+  const fragResp = document.createDocumentFragment();
+  const fragAviso = document.createDocumentFragment();
+
+  turmas.forEach(turma => {
+    fragResp.appendChild(new Option(turma, turma));
+    fragAviso.appendChild(new Option(turma, turma));
   });
+
+  selectResp.appendChild(fragResp);
+  selectAviso.appendChild(fragAviso);
+
+  const ultima = localStorage.getItem("ultimaTurma");
+  if (ultima) selectResp.value = ultima;
+}
 function voltarPainel() {
   document.getElementById("mural-escola").style.display = "none";
   document.getElementById("painel-escola").style.display = "block";
@@ -760,7 +777,24 @@ function carregarMuralGeral() {
       lista.innerHTML = "<p>❌ Erro ao carregar avisos.</p>";
     });
 }
+// 🚀 CARREGAR TURMAS SEM TRAVAR
 
+// pré-carrega em segundo plano (1 segundo depois)
+let turmasCarregadas = false;
+
+async function carregarTurmasSafe() {
+  if (turmasCarregadas) return;
+  turmasCarregadas = true;
+
+  await carregarTurmas();
+}
+
+// pré-carrega
+setTimeout(carregarTurmasSafe, 500);
+
+// se clicar antes
+document.getElementById("turma")
+  .addEventListener("click", carregarTurmasSafe, { once: true });
 </script>
 
 
