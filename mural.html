@@ -279,7 +279,7 @@ header {
 
 <div id="avisos" style="display:none;"></div>
 <script>
-const URL_API = "https://script.google.com/macros/s/AKfycbzTgnA_j-djgi91-QcmcC_bTvVVzcRyBhTy68mnTd9ZtR-ck2IKh5ImqasF7qeyniVvRQ/exec";
+const URL_API = "https://script.google.com/macros/s/AKfycbz9OOCykszEzHkbhaHTrwAqF-uA-4NYzugUX9FFIHYIYb_EKODSQc6swGst6kvNEW7zrA/exec";
 // 🔥 acorda Apps Script
 setTimeout(() => {
   fetch(URL_API + "?t=" + Date.now()).catch(() => {});
@@ -510,37 +510,59 @@ function renderizar() {
   ${(a.Fixado || "").toUpperCase() === "SIM" ? "aviso-fixado" : ""}
 `;
 
-    box.innerHTML = `
-  <h3>${icone(a.Tipo)} ${a.Título}</h3>
-  <p>${linkify(a.Mensagem)}</p>
-  <small>
-    📅 ${new Date(a.Data).toLocaleDateString("pt-BR")}
-    • 🏫 ${a.Turma}
-  </small>
+   box.innerHTML = `
+<h3>${icone(a.Tipo)} ${a.Título}</h3>
+<p>${linkify(a.Mensagem)}</p>
+<small>
+📅 ${new Date(a.Data).toLocaleDateString("pt-BR")}
+• 🏫 ${a.Turma}
+</small>
 
-  <!-- 👍 BOTÃO CURTIR -->
-  ${localStorage.getItem("curtido_" + a.__linha)
-  ? `
+${localStorage.getItem("curtido_" + a.__linha)
+? `
 <button class="curtir-btn curtido" disabled>
-  💙 Curtido
-  <span id="curtidas-${a.__linha}">
-    ${a.Curtidas || 0}
-  </span>
+💙 Curtido
+<span id="curtidas-${a.__linha}">
+${a.Curtidas || 0}
+</span>
 </button>
 `
-  : `
+: `
 <button class="curtir-btn"
-        onclick="curtirAviso(${a.__linha}, this)">
-  👍 Curtir
-  <span id="curtidas-${a.__linha}">
-    ${a.Curtidas || 0}
-  </span>
+onclick="curtirAviso(${a.__linha}, this)">
+👍 Curtir
+<span id="curtidas-${a.__linha}">
+${a.Curtidas || 0}
+</span>
 </button>
-`}
+`
+}
 
+<br>
+👁️ <span id="views-${a.__linha}">
+${a.Visualizacoes || 0}
+</span> visualizações
 `;
-    div.appendChild(box);
+     div.appendChild(box);
+    registrarVisualizacao(a.__linha);
   });
+}
+  function registrarVisualizacao(linha) {
+
+  const chave = "view_" + linha;
+
+  // evita contar várias vezes no mesmo celular
+  if (localStorage.getItem(chave)) return;
+
+  localStorage.setItem(chave, true);
+
+  fetch(URL_API + "?tipo=view&linha=" + linha)
+    .then(r => r.json())
+    .then(res => {
+      const span = document.getElementById("views-" + linha);
+      if (span) span.innerText = res.visualizacoes;
+    })
+    .catch(err => console.error(err));
 }
   function curtirAviso(linha, botao) {
   const chave = "curtido_" + linha;
