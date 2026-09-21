@@ -279,11 +279,112 @@ header {
 
 <div id="avisos" style="display:none;"></div>
 <script>
-const URL_API = "https://script.google.com/macros/s/AKfycby6He4M96JIWxXrLz7JaFBqaGe7_1OMBwpZQu73CR_nthfJBSPJlznTGzSwf8WP5PnIKg/exec";
-// 🔥 acorda Apps Script
-setTimeout(() => {
-  fetch(URL_API + "?t=" + Date.now()).catch(() => {});
-}, 200);
+const URL_API = "https://script.google.com/macros/s/AKfycbwZC2DHe7bFUVseKAJKvpGbrfuhu9z-vPsayOC6RR4iyV1x5bIVXY5-SXI-OXgqKzeFJw/exec";
+// ===============================
+// 🔵 COMUNICAÇÃO COM APPS SCRIPT
+// VIA JSONP
+// ===============================
+
+function chamarAPI(params = {}) {
+
+  return new Promise((resolve, reject) => {
+
+    const nomeCallback =
+      "__mural_jsonp_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(36)
+        .slice(2);
+
+    const script =
+      document.createElement("script");
+
+    const query =
+      new URLSearchParams({
+        ...params,
+        callback: nomeCallback,
+        t: Date.now()
+      });
+
+    let finalizado = false;
+
+    const limpar = () => {
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+      try {
+        delete window[nomeCallback];
+      } catch (_) {
+        window[nomeCallback] =
+          undefined;
+      }
+    };
+
+    const temporizador =
+      setTimeout(() => {
+
+        if (finalizado) return;
+
+        finalizado = true;
+
+        limpar();
+
+        reject(
+          new Error(
+            "Tempo esgotado ao consultar o Apps Script."
+          )
+        );
+
+      }, 20000);
+
+    window[nomeCallback] =
+      (dados) => {
+
+        if (finalizado) return;
+
+        finalizado = true;
+
+        clearTimeout(
+          temporizador
+        );
+
+        limpar();
+
+        resolve(dados);
+      };
+
+    script.onerror = () => {
+
+      if (finalizado) return;
+
+      finalizado = true;
+
+      clearTimeout(
+        temporizador
+      );
+
+      limpar();
+
+      reject(
+        new Error(
+          "Falha ao carregar a API do Apps Script."
+        )
+      );
+    };
+
+    script.src =
+      URL_API +
+      "?" +
+      query.toString();
+
+    document.head.appendChild(
+      script
+    );
+  });
+}
 const params = new URLSearchParams(window.location.search);
 const turmaSelecionadaRaw = params.get("turma");
 const turmaSelecionada = turmaSelecionadaRaw
@@ -363,134 +464,261 @@ function mostrarErroTurma() {
   `;
 }
 
-// 1️⃣ Buscar lista oficial de turmas e avisos
+// ===============================
+// 🟢 CARREGAR TURMAS E AVISOS
+// ===============================
+
 async function carregarDadosIniciais() {
-  const loading = document.getElementById("loading");
-  const avisosDiv = document.getElementById("avisos");
+
+  const loading =
+    document.getElementById(
+      "loading"
+    );
+
+  const avisosDiv =
+    document.getElementById(
+      "avisos"
+    );
 
   try {
-    loading.style.display = "flex";
-    loading.innerText = "Carregando avisos…";
 
-    // Busca as turmas separadamente
+    loading.style.display =
+      "flex";
+
+    loading.innerHTML = `
+      <div class="loading-spinner"></div>
+      <div class="loading-text">
+        Carregando avisos…
+      </div>
+    `;
+
+    // ===============================
+    // 🟢 BUSCAR TURMAS
+    // ===============================
+
     let turmas = [];
 
     try {
-      const respostaTurmas = await fetch(
-        URL_API + "?tipo=turmas&t=" + Date.now(),
-        { cache: "no-store" }
+
+      turmas =
+        await chamarAPI({
+          tipo: "turmas"
+        });
+
+      if (
+        !Array.isArray(turmas)
+      ) {
+        throw new Error(
+          "Resposta de turmas não é uma lista."
+        );
+      }
+
+      console.log(
+        "Turmas recebidas:",
+        turmas
       );
 
-      if (!respostaTurmas.ok) {
-        throw new Error("HTTP turmas: " + respostaTurmas.status);
-      }
-
-      turmas = await respostaTurmas.json();
-
-      if (!Array.isArray(turmas)) {
-        throw new Error("Resposta de turmas não é uma lista.");
-      }
-
-      console.log("Turmas recebidas:", turmas);
-
     } catch (erroTurmas) {
-      console.error("Erro ao carregar turmas:", erroTurmas);
 
-      // Não derruba o mural se somente a lista de turmas falhar.
-      // Se houver uma turma na URL, continuamos tentando carregar os avisos.
+      console.error(
+        "Erro ao carregar turmas:",
+        erroTurmas
+      );
+
       turmas = [];
     }
 
-    // Validação da turma, somente se conseguimos obter a lista oficial.
-    if (turmaSelecionada && turmas.length > 0) {
-      const turmasValidas = turmas.map(t =>
-        String(t).trim().toUpperCase()
-      );
+    // ===============================
+    // 🟢 VALIDAR TURMA
+    // ===============================
 
-      if (!turmasValidas.includes(turmaSelecionada)) {
+    if (
+      turmaSelecionada &&
+      turmas.length > 0
+    ) {
+
+      const turmasValidas =
+        turmas.map(t =>
+          String(t)
+            .trim()
+            .toUpperCase()
+        );
+
+      if (
+        !turmasValidas.includes(
+          turmaSelecionada
+        )
+      ) {
+
         mostrarErroTurma();
+
         return;
       }
     }
 
-    // Busca os avisos separadamente
-    const respostaAvisos = await fetch(
-      URL_API + "?t=" + Date.now(),
-      { cache: "no-store" }
+    // ===============================
+    // 🟢 BUSCAR AVISOS
+    // ===============================
+
+    const dados =
+      await chamarAPI();
+
+    if (
+      !Array.isArray(dados)
+    ) {
+
+      throw new Error(
+        "Resposta de avisos não é uma lista."
+      );
+    }
+
+    console.log(
+      "Avisos recebidos:",
+      dados
     );
-
-    if (!respostaAvisos.ok) {
-      throw new Error("HTTP avisos: " + respostaAvisos.status);
-    }
-
-    const dados = await respostaAvisos.json();
-
-    if (!Array.isArray(dados)) {
-      throw new Error("Resposta de avisos não é uma lista.");
-    }
-
-    console.log("Avisos recebidos:", dados);
 
     avisos = dados;
 
-    ultimaAssinaturaAvisos = dados.length
-      ? dados[0].Data + "-" + dados.length
-      : "";
+    ultimaAssinaturaAvisos =
+      dados.length
+        ? dados[0].Data +
+          "-" +
+          dados.length
+        : "";
 
-    // Atualiza cache
-    localStorage.setItem(cacheKey, JSON.stringify(dados));
-    localStorage.setItem(cacheTimeKey, Date.now());
+    // ===============================
+    // 💾 CACHE
+    // ===============================
 
-    loading.style.display = "none";
-    avisosDiv.style.display = "block";
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify(dados)
+    );
+
+    localStorage.setItem(
+      cacheTimeKey,
+      Date.now()
+    );
+
+    // ===============================
+    // 👁️ MOSTRAR AVISOS
+    // ===============================
+
+    loading.style.display =
+      "none";
+
+    avisosDiv.style.display =
+      "block";
 
     renderizar();
 
-    // Atualização automática
-    clearInterval(window.intervaloAvisos);
-    window.intervaloAvisos = setInterval(
-      carregarAvisosAutomatico,
-      13000
+    // ===============================
+    // 🔄 ATUALIZAÇÃO AUTOMÁTICA
+    // ===============================
+
+    clearInterval(
+      window.intervaloAvisos
     );
 
-  } catch (erro) {
-    console.error("ERRO COMPLETO AO CARREGAR MURAL:", erro);
+    window.intervaloAvisos =
+      setInterval(
+        carregarAvisosAutomatico,
+        13000
+      );
 
-    loading.innerText =
-      "Não foi possível carregar os avisos. Atualize a página e tente novamente.";
+  } catch (erro) {
+
+    console.error(
+      "ERRO COMPLETO AO CARREGAR MURAL:",
+      erro
+    );
+
+    loading.innerHTML = `
+      <div style="
+        text-align:center;
+        padding:20px;
+      ">
+        <strong>
+          Não foi possível carregar os avisos.
+        </strong>
+
+        <br><br>
+
+        Verifique sua conexão
+        e atualize a página.
+      </div>
+    `;
   }
 }
 
-carregarDadosIniciais();
 
-// 🔄 Busca avisos e atualiza automaticamente se houver mudança
+// ===============================
+// 🔄 ATUALIZAÇÃO AUTOMÁTICA
+// ===============================
+
 function carregarAvisosAutomatico() {
-  fetch(URL_API + "?t=" + Date.now(), {
-    cache: "no-store"
-  })
-    .then(r => r.json())
+
+  chamarAPI()
+
     .then(dados => {
 
-      const assinatura = dados.length
-        ? dados[0].Data + "-" + dados.length
-        : "";
+      if (
+        !Array.isArray(dados)
+      ) {
+        throw new Error(
+          "Resposta de atualização não é uma lista."
+        );
+      }
 
-      // se não mudou, não atualiza
-      if (assinatura === ultimaAssinaturaAvisos) return;
+      const assinatura =
+        dados.length
+          ? dados[0].Data +
+            "-" +
+            dados.length
+          : "";
 
-      // atualiza dados
-      ultimaAssinaturaAvisos = assinatura;
+      // Não mudou
+      if (
+        assinatura ===
+        ultimaAssinaturaAvisos
+      ) {
+        return;
+      }
+
+      ultimaAssinaturaAvisos =
+        assinatura;
+
       avisos = dados;
 
-      // atualiza cache
-      localStorage.setItem(cacheKey, JSON.stringify(dados));
-      localStorage.setItem(cacheTimeKey, Date.now());
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify(dados)
+      );
 
-      // renderiza
+      localStorage.setItem(
+        cacheTimeKey,
+        Date.now()
+      );
+
       renderizar();
     })
-    .catch(err => console.error("Erro na atualização automática:", err));
+
+    .catch(err => {
+
+      console.error(
+        "Erro na atualização automática:",
+        err
+      );
+
+    });
 }
+
+
+// ===============================
+// ▶️ INICIAR
+// ===============================
+
+carregarDadosIniciais();
 function icone(tipo) {
   if (tipo === "aviso") return "📢";
   if (tipo === "reuniao") return "📅";
@@ -601,57 +829,146 @@ ${a.Visualizacoes || 0}
 }
   function registrarVisualizacao(linha) {
 
-  const chave = "view_" + linha;
+  const chave =
+    "view_" + linha;
 
-  // evita contar várias vezes no mesmo celular
-  if (localStorage.getItem(chave)) return;
+  // Evita contar várias vezes
+  // no mesmo celular
+  if (
+    localStorage.getItem(chave)
+  ) {
+    return;
+  }
 
-  localStorage.setItem(chave, true);
+  localStorage.setItem(
+    chave,
+    true
+  );
 
-  fetch(URL_API + "?tipo=view&linha=" + linha)
-    .then(r => r.json())
+  chamarAPI({
+    tipo: "view",
+    linha: linha
+  })
+
     .then(res => {
-      const span = document.getElementById("views-" + linha);
-      if (span) span.innerText = res.visualizacoes;
+
+      const span =
+        document.getElementById(
+          "views-" + linha
+        );
+
+      if (span) {
+        span.innerText =
+          res.visualizacoes;
+      }
+
     })
-    .catch(err => console.error(err));
-}
-  function curtirAviso(linha, botao) {
-  const chave = "curtido_" + linha;
 
-  // bloqueia clique duplo
-  if (localStorage.getItem(chave)) return;
-
-  // ⚡ FEEDBACK IMEDIATO
-  botao.classList.add("curtido");
-  botao.setAttribute("disabled", true);
-  botao.firstChild.textContent = "💙 Curtido ";
-
-  const span = botao.querySelector("span");
-  const atual = Number(span.innerText) || 0;
-  span.innerText = atual + 1;
-
-  // salva local imediatamente
-  localStorage.setItem(chave, true);
-
-  // envia para o servidor em segundo plano
-  fetch(URL_API + "?tipo=curtir&linha=" + linha)
-    .then(r => r.json())
-    .then(res => {
-      // sincroniza com valor real do servidor
-      span.innerText = res.curtidas;
-    })
     .catch(err => {
-      console.error(err);
 
-      // 🔄 reverte se falhar
-      localStorage.removeItem(chave);
-      botao.classList.remove("curtido");
-      botao.removeAttribute("disabled");
-      botao.firstChild.textContent = "👍 Curtir ";
-      span.innerText = atual;
+      console.error(
+        "Erro ao registrar visualização:",
+        err
+      );
 
-      alert("Não foi possível registrar a curtida. Tente novamente.");
+      localStorage.removeItem(
+        chave
+      );
+    });
+}
+  function curtirAviso(
+  linha,
+  botao
+) {
+
+  const chave =
+    "curtido_" + linha;
+
+  // Bloqueia clique duplo
+  if (
+    localStorage.getItem(chave)
+  ) {
+    return;
+  }
+
+  // ===============================
+  // ⚡ FEEDBACK IMEDIATO
+  // ===============================
+
+  botao.classList.add(
+    "curtido"
+  );
+
+  botao.setAttribute(
+    "disabled",
+    true
+  );
+
+  botao.firstChild.textContent =
+    "💙 Curtido ";
+
+  const span =
+    botao.querySelector(
+      "span"
+    );
+
+  const atual =
+    Number(
+      span.innerText
+    ) || 0;
+
+  span.innerText =
+    atual + 1;
+
+  localStorage.setItem(
+    chave,
+    true
+  );
+
+  // ===============================
+  // 🟢 ENVIAR AO SERVIDOR
+  // ===============================
+
+  chamarAPI({
+    tipo: "curtir",
+    linha: linha
+  })
+
+    .then(res => {
+
+      span.innerText =
+        res.curtidas;
+    })
+
+    .catch(err => {
+
+      console.error(
+        "Erro ao registrar curtida:",
+        err
+      );
+
+      // Reverte
+      localStorage.removeItem(
+        chave
+      );
+
+      botao.classList.remove(
+        "curtido"
+      );
+
+      botao.removeAttribute(
+        "disabled"
+      );
+
+      botao.firstChild.textContent =
+        "👍 Curtir ";
+
+      span.innerText =
+        atual;
+
+      alert(
+        "Não foi possível registrar a curtida. Tente novamente."
+      );
     });
 }
 
