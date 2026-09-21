@@ -560,18 +560,41 @@ async function carregarDadosIniciais() {
     // 🟢 BUSCAR AVISOS
     // ===============================
 
-    const dados =
-      await chamarAPI();
+    const dados = await chamarAPI();
 
-    if (
-      !Array.isArray(dados)
-    ) {
+console.log("📦 RESPOSTA BRUTA DOS AVISOS:", dados);
 
-      throw new Error(
-        "Resposta de avisos não é uma lista."
-      );
-    }
+if (!Array.isArray(dados)) {
 
+  console.error(
+    "❌ O Apps Script não retornou uma lista:",
+    dados
+  );
+
+  if (dados && dados.erro) {
+
+    throw new Error(
+      "Apps Script: " +
+      dados.erro +
+      (
+        dados.detalhe
+          ? " — " + dados.detalhe
+          : ""
+      )
+    );
+
+  }
+
+  throw new Error(
+    "Resposta de avisos não é uma lista. Resposta recebida: " +
+    JSON.stringify(dados)
+  );
+}
+
+console.log(
+  "✅ AVISOS RECEBIDOS:",
+  dados
+);
     console.log(
       "Avisos recebidos:",
       dados
