@@ -363,53 +363,105 @@ function mostrarErroTurma() {
   `;
 }
 
-// 1️⃣ Buscar lista oficial de turmas
-// 🚀 BUSCA EM PARALELO (turmas + avisos)
-const reqTurmas = fetch(URL_API + "?tipo=turmas&t=" + Date.now(), {
-  cache: "no-store"
-}).then(r => r.json());
+// 1️⃣ Buscar lista oficial de turmas e avisos
+async function carregarDadosIniciais() {
+  const loading = document.getElementById("loading");
+  const avisosDiv = document.getElementById("avisos");
 
-const reqAvisos = fetch(URL_API + "?t=" + Date.now(), {
-  cache: "no-store"
-}).then(r => r.json());
-Promise.all([reqTurmas, reqAvisos])
-  .then(([turmas, dados]) => {
+  try {
+    loading.style.display = "flex";
+    loading.innerText = "Carregando avisos…";
 
-    const turmasValidas = turmas.map(t =>
-      t.trim().toUpperCase()
-    );
+    // Busca as turmas separadamente
+    let turmas = [];
 
-    // ❌ Turma inválida
-    if (turmaSelecionada && !turmasValidas.includes(turmaSelecionada)) {
-      mostrarErroTurma();
-      return;
+    try {
+      const respostaTurmas = await fetch(
+        URL_API + "?tipo=turmas&t=" + Date.now(),
+        { cache: "no-store" }
+      );
+
+      if (!respostaTurmas.ok) {
+        throw new Error("HTTP turmas: " + respostaTurmas.status);
+      }
+
+      turmas = await respostaTurmas.json();
+
+      if (!Array.isArray(turmas)) {
+        throw new Error("Resposta de turmas não é uma lista.");
+      }
+
+      console.log("Turmas recebidas:", turmas);
+
+    } catch (erroTurmas) {
+      console.error("Erro ao carregar turmas:", erroTurmas);
+
+      // Não derruba o mural se somente a lista de turmas falhar.
+      // Se houver uma turma na URL, continuamos tentando carregar os avisos.
+      turmas = [];
     }
 
+    // Validação da turma, somente se conseguimos obter a lista oficial.
+    if (turmaSelecionada && turmas.length > 0) {
+      const turmasValidas = turmas.map(t =>
+        String(t).trim().toUpperCase()
+      );
+
+      if (!turmasValidas.includes(turmaSelecionada)) {
+        mostrarErroTurma();
+        return;
+      }
+    }
+
+    // Busca os avisos separadamente
+    const respostaAvisos = await fetch(
+      URL_API + "?t=" + Date.now(),
+      { cache: "no-store" }
+    );
+
+    if (!respostaAvisos.ok) {
+      throw new Error("HTTP avisos: " + respostaAvisos.status);
+    }
+
+    const dados = await respostaAvisos.json();
+
+    if (!Array.isArray(dados)) {
+      throw new Error("Resposta de avisos não é uma lista.");
+    }
+
+    console.log("Avisos recebidos:", dados);
+
     avisos = dados;
-  ultimaAssinaturaAvisos = dados.length
-  ? dados[0].Data + "-" + dados.length
-  : "";
 
-    
-    // 💾 atualiza cache COM VALIDADE
-  localStorage.setItem(cacheKey, JSON.stringify(dados));
-  localStorage.setItem(cacheTimeKey, Date.now());
+    ultimaAssinaturaAvisos = dados.length
+      ? dados[0].Data + "-" + dados.length
+      : "";
 
+    // Atualiza cache
+    localStorage.setItem(cacheKey, JSON.stringify(dados));
+    localStorage.setItem(cacheTimeKey, Date.now());
 
-    // 👁️ exibe avisos
-    setTimeout(() => {
-      document.getElementById("loading").style.display = "none";
-      document.getElementById("avisos").style.display = "block";
-      renderizar();
-    });
+    loading.style.display = "none";
+    avisosDiv.style.display = "block";
 
-    // 🔄 update automático continua igual
-    setInterval(carregarAvisosAutomatico, 13000);
-  })
-  .catch(() => {
-    document.getElementById("loading").innerText =
-      "Não foi possível carregar os avisos.";
-  });
+    renderizar();
+
+    // Atualização automática
+    clearInterval(window.intervaloAvisos);
+    window.intervaloAvisos = setInterval(
+      carregarAvisosAutomatico,
+      13000
+    );
+
+  } catch (erro) {
+    console.error("ERRO COMPLETO AO CARREGAR MURAL:", erro);
+
+    loading.innerText =
+      "Não foi possível carregar os avisos. Atualize a página e tente novamente.";
+  }
+}
+
+carregarDadosIniciais();
 
 // 🔄 Busca avisos e atualiza automaticamente se houver mudança
 function carregarAvisosAutomatico() {
